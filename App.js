@@ -1,12 +1,18 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
+import { CustomThemeProvider } from './components/ThemeColorSwitch';
+import Activities from './screens/Activities';
+import { Navigation } from './navigation/Navigation';
+
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+      <CustomThemeProvider>
+        <StatusBar style="auto" />
+        <View style={styles.container}>
+            <Navigation />
+        </View>
+      </CustomThemeProvider>
   );
 }
 
