@@ -3,13 +3,12 @@ import {useNavigation} from "@react-navigation/native";
 import {FlatList, TouchableOpacity} from "react-native";
 import {myStyle} from "../helperFile/myStyle";
 
-const ItemsList = ({item, type}) => {
+export const ItemsList = ({item, type}) => {
     const navigation = useNavigation()
 
     const renderItem = ({item}) => (
         <TouchableOpacity
-            style={myStyle.item}
-            onPress={() => navigation.navigate('ActivityEntry', {item, type})}>
+            style={myStyle.item}>
             <Text style={myStyle.title}>{item.title}</Text>
         </TouchableOpacity>
     )

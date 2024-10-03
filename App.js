@@ -1,7 +1,7 @@
 import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, Text, View} from 'react-native';
 import {CustomThemeProvider} from './components/ThemeColorSwitch';
-import ActivitiesScreen from './screens/ActivitiesScreen';
+import InfoDisplayScreen from './screens/InfoDisplayScreen';
 import {Navigation} from './navigation/Navigation';
 import {NavigationContainer} from "@react-navigation/native";
 

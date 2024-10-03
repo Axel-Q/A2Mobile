@@ -1,15 +1,14 @@
 import React from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
-import ActivitiesScreen from "../screens/ActivitiesScreen";
+import InfoDisplayScreen from "../screens/InfoDisplayScreen";
 import {CustomThemeProvider} from "../components/ThemeColorSwitch";
-import DietScreen from "../screens/DietScreen";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
 import {SettingsScreen} from "../screens/SettingsScreen";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {myStyle} from "../helperFile/myStyle";
-import {DietEntryScreen} from "../screens/DietEntryScreen";
+import {EntryScreen} from "../screens/EntryScreen";
 
 
 const Tab = createBottomTabNavigator();
@@ -36,8 +35,8 @@ const BottomTabNavigator = () => {
             },
         })}
         >
-            <Tab.Screen name="Activities" component={ActivitiesScreen}/>
-            <Tab.Screen name="Diet" component={DietScreen}/>
+            <Tab.Screen name="Activities" component={InfoDisplayScreen}/>
+            <Tab.Screen name="Diet" component={InfoDisplayScreen}/>
             <Tab.Screen name="Settings" component={SettingsScreen}/>
         </Tab.Navigator>
     )
@@ -51,9 +50,8 @@ export const Navigation = () => {
                 headerShown: false,
             }}/>
             <Stack.Screen name="ActivityEntry" component={CustomThemeProvider}/>
-            <Stack.Screen name={"DietEntry"} component={DietEntryScreen}/>
+            <Stack.Screen name={"DietEntry"} component={EntryScreen}/>
             <Stack.Screen name={"Settings"} component={SettingsScreen}/>
-
         </Stack.Navigator>
     );
 }
