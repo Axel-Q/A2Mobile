@@ -3,7 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import {View, Text, StatusBar, StyleSheet} from "react-native";
 
 
-const Activities = () => {
+const DietScreen = () => {
     return (
         <View style={styles.container}>
             <Text>Activities</Text>
@@ -20,5 +20,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 });
-export default Activities;
+export default DietScreen;
 

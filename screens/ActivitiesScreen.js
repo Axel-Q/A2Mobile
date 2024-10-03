@@ -1,11 +1,12 @@
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import {View, Text, StatusBar, StyleSheet} from "react-native";
+import {myStyle} from "../helperFile/myStyle";
 
 
-const Activities = () => {
+const ActivitiesScreen = () => {
     return (
-        <View style={styles.container}>
+        <View style={myStyle.homePageContainer}>
             <Text>Activities</Text>
             <Feather name="activity" size={24} color="black"/>
             <Ionicons name="fast-food-outline" size={24} color="black"/>
@@ -13,13 +14,5 @@ const Activities = () => {
     );
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-});
-export default Activities;
+export default ActivitiesScreen;
 
