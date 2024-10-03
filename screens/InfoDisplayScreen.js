@@ -1,17 +1,34 @@
 import Feather from '@expo/vector-icons/Feather';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import {View, Text, StatusBar, StyleSheet, Button} from "react-native";
+import {View, Text, StatusBar, StyleSheet, Button, SafeAreaView} from "react-native";
 import {myStyle} from "../helperFile/myStyle";
-import {ItemList} from "../components/ItemsList";
+import {ItemsList} from "../components/ItemsList";
 import {useState} from "react";
+import {useRoute} from "@react-navigation/native";
+import {log} from "expo/build/devtools/logger";
 
+const InfoDisplayScreen = ({navigation, route}) => {
+    const [itemList, setItemList] = useState([]);
+    const handleAdd = (newEvent, EventTime, durationOrMin) => {
+        const newItem = {id:Date.now(), title: newEvent, time: EventTime, duration: durationOrMin};
+        setItemList([...itemList, newItem]);
+    };
 
-const InfoDisplayScreen = ({navigation}) => {
-    const[item, setItem] = useState([])
+    navigation.setOptions({
+        headerRight: () => (
+            <View>
+                <Button title="Add" onPress={() => navigation.navigate('Add', {handleAdd})}/>
+            </View>
+        ),
+    });
+
     return (
-        <View style={myStyle.homePageContainer}>
-            <Text>Activities</Text>
-        </View>
+        <SafeAreaView>
+            <View style={myStyle.homePageContainer}>
+                <Text>Activities</Text>
+                <ItemsList itemList={itemList} type={'activity'}/>
+            </View>
+        </SafeAreaView>
     );
 }
 

@@ -26,5 +26,20 @@ export const myStyle = {
         headerStyle: {
             backgroundColor: '#009783',
         },
+    },
+    button: {
+        flexDirection: "row",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        alignItems: "center",
+        marginVertical: 10,
+    },
+    text: {
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    datePickerContainer: {
+      height: 40, marginBottom: 20
     }
 }

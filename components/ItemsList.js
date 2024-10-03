@@ -2,9 +2,9 @@ import React from "react";
 import {useNavigation} from "@react-navigation/native";
 import {FlatList, TouchableOpacity} from "react-native";
 import {myStyle} from "../helperFile/myStyle";
+import {Text} from "react-native";
 
-export const ItemsList = ({item, type}) => {
-    const navigation = useNavigation()
+export const ItemsList = ({itemList, type}) => {
 
     const renderItem = ({item}) => (
         <TouchableOpacity
@@ -13,6 +13,6 @@ export const ItemsList = ({item, type}) => {
         </TouchableOpacity>
     )
     return (
-        <FlatList data={item} renderItem={renderItem} keyExtractor={(item) => item.id.toString()}/>
+        <FlatList data={itemList} renderItem={renderItem} keyExtractor={(item) => item.id.toString()}/>
     )
 }
