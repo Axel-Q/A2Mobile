@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import InfoDisplayScreen from "../screens/InfoDisplayScreen";
@@ -8,7 +8,7 @@ import {SettingsScreen} from "../screens/SettingsScreen";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {EntryScreen} from "../screens/EntryScreen";
 import {} from "../helperFile/Theme";
-
+import {ItemContext} from "../context/ItemContext";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -41,16 +41,21 @@ const BottomTabNavigator = () => {
 }
 
 export const Navigation = () => {
-    return (<Stack.Navigator>
-        <Stack.Screen name="Home" component={BottomTabNavigator} options={{
-            headerShown: false,
-        }}/>
-        <Stack.Screen name="Entry" component={EntryScreen} options={
-            ({route}) => ({
-            title:
-                route.params?.type === 'activity'
-                    ? 'Add an Activity'
-                    : 'Add A Diet Entry',
-        })}/>
-    </Stack.Navigator>);
+    const [itemList, setItemList] = useState([]);
+    return (
+        <ItemContext.Provider value={{itemList, setItemList}}>
+            <Stack.Navigator>
+                <Stack.Screen name="Home" component={BottomTabNavigator} options={{
+                    headerShown: false,
+                }}/>
+                <Stack.Screen name="Entry" component={EntryScreen} options={
+                    ({route}) => ({
+                        title:
+                            route.params?.type === 'activity'
+                                ? 'Add an Activity'
+                                : 'Add A Diet Entry',
+                    })}/>
+            </Stack.Navigator>
+        </ItemContext.Provider>);
+
 }
