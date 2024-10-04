@@ -40,6 +40,32 @@ export const myStyle = {
         fontWeight: "bold",
     },
     datePickerContainer: {
-      height: 40, marginBottom: 20
-    }
+        height: 40, marginBottom: 20
+    },
+    ItemDisplayContainer: {
+        paddingVertical: 10, // Add some vertical padding
+        alignItems: 'center',
+    },
+    EachItemContainer: {
+        padding: 15,
+        flexDirection: 'row',
+        backgroundColor: 'rgb(184,184,1)',
+        marginVertical: 10, // Add gap between items
+        borderRadius: 10, // Optional: add rounded corners
+    },
+    EachItemText: {
+        fontSize: 15,
+        color: 'white',
+        marginRight: 20,
+    },
+    EachItemDuration: {
+        fontSize: 15,
+        backgroundColor: 'white',
+        paddingHorizontal: 10,
+    },
+    EachItemDate: {
+        fontSize: 15,
+        backgroundColor: 'white',
+        marginRight: 20,
+    },
 }

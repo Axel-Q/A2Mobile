@@ -31,6 +31,7 @@ export default function CustomizedDatePicker({ selectedDate, onDateSelect }) {
           mode="date"
           display="inline"
           onChange={handleDateChange}
+
         />
       )}
       {Platform.OS === 'ios' && isPickerVisible && (

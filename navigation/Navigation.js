@@ -33,7 +33,7 @@ const BottomTabNavigator = () => {
         },
     })}
     >
-        <Tab.Screen name="Activities" component={InfoDisplayScreen}/>
+        <Tab.Screen name="Activities" component={InfoDisplayScreen} />
         <Tab.Screen name="Diet" component={InfoDisplayScreen}/>
         <Tab.Screen name="Settings" component={SettingsScreen}/>
     </Tab.Navigator>);
@@ -46,7 +46,6 @@ export const Navigation = () => {
         <Stack.Screen name="Home" component={BottomTabNavigator} options={{
             headerShown: false,
         }}/>
-        <Stack.Screen name="Add" component={EntryScreen}/>
-        <Stack.Screen name={'Edit'} component={EntryScreen}/>
+        <Stack.Screen name="Entry" component={EntryScreen}/>
     </Stack.Navigator>);
 }

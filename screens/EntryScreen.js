@@ -6,6 +6,7 @@ import {useNavigation} from "@react-navigation/native";
 import CustomizedDatePicker from "../components/CustomizedDatePicker";
 
 export const EntryScreen = ({navigation, route}) => {
+    const {handleAdd} = route.params;
     const [date, setDate] = useState(null);
     const [duration, setDuration] = useState(null);
     const [value, setValue] = useState(null);
@@ -21,29 +22,24 @@ export const EntryScreen = ({navigation, route}) => {
         {label: "Camping", value: "Camping"},
     ]);
 
- const onSubmit = () => {
-    if (!value) {
-        Alert.alert('Error', 'Please select an activity.');
-        return;
-    }
+    const onSubmit = () => {
+        if (!value) {
+            Alert.alert('Error', 'Please select an activity.');
+            return;
+        }
 
-    if (!duration || isNaN(duration)) {
-        Alert.alert('Error', 'Please enter a valid duration.');
-        return;
-    }
+        if (!duration || isNaN(duration)) {
+            Alert.alert('Error', 'Please enter a valid duration.');
+            return;
+        }
 
-    if (!date) {
-        Alert.alert('Error', 'Please select a date.');
-        return;
-    }
-
-    // If all validations pass, navigate to InfoDisplay screen
-    navigation.navigate('InfoDisplayScreen', {
-        newItemTitle: value,
-        duration: duration,
-        date: date.toLocaleDateString(),
-    });
-};
+        if (!date) {
+            Alert.alert('Error', 'Please select a date.');
+            return;
+        }
+        handleAdd(value, date, duration);
+        navigation.goBack();
+    };
 
 
     return (
