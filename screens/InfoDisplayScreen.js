@@ -10,32 +10,64 @@ import {log} from "expo/build/devtools/logger";
 const InfoDisplayScreen = ({navigation, route}) => {
 
     useEffect(() => {
-    console.log('Updated itemList:', itemList);
-}, [itemList]);
+        console.log('Updated itemList:', itemList);
+    }, [itemList]);
 
 
     const [itemList, setItemList] = useState([]);
-    const handleAdd = (newEvent, EventTime, durationOrMin) => {
-        const newItem = {id:Date.now(), title: newEvent, time: EventTime, duration: durationOrMin};
-        setItemList((prevItemList) => [...prevItemList, newItem]);
+
+    const handleAdd = (itemData) => {
+        const {id, type} = itemData;
+        let newItem = {id: id || Date.now(), type};
+
+        if (type === 'activity') {
+            newItem = {
+                ...newItem,
+                title: itemData.title,
+                time: itemData.time instanceof Date ? itemData.time : new Date(itemData.time),
+                duration: itemData.duration,
+            };
+        } else if (type === 'diet') {
+            newItem = {
+                ...newItem,
+                description: itemData.description,
+                date: itemData.date instanceof Date ? itemData.date : new Date(itemData.date),
+                calories: itemData.calories,
+            };
+        }
+
+        setItemList((prevItemList) => {
+            if (id) {
+                // Update existing item
+                return prevItemList.map((item) => (item.id === id ? newItem : item));
+            } else {
+                // Add new item
+                return [...prevItemList, newItem];
+            }
+        });
     };
 
-    navigation.setOptions({
-        headerRight: () => (
-            <View>
-                <Button title="Add" onPress={() => navigation.navigate('Entry', {handleAdd})}/>
-            </View>
-        ),
-    });
 
-    return (
-        <SafeAreaView>
-            <View>
-                <Text>Activities</Text>
-                <ItemsList itemList={itemList} type={'activity'}/>
-            </View>
-        </SafeAreaView>
-    );
+    const type = route.name === 'Activities' ? 'activity' : 'diet';
+
+    useEffect(() => {
+        navigation.setOptions({
+            headerRight: () => (
+                <View>
+                    <Button
+                        title="Add"
+                        onPress={() => navigation.navigate('Entry', {type, handleAdd})}
+                    />
+                </View>
+            ),
+        });
+    }, [navigation, type, handleAdd]);
+
+    return (<SafeAreaView>
+        <View>
+            <ItemsList itemList={itemList} type={type} handleAdd={handleAdd}/>
+        </View>
+    </SafeAreaView>);
 }
 
 export default InfoDisplayScreen;

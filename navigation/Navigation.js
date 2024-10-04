@@ -31,21 +31,26 @@ const BottomTabNavigator = () => {
             }
             return <IconComponent name={iconName} size={size} color={color}/>;
         },
+        headerTitleAlign: 'center',
     })}
     >
-        <Tab.Screen name="Activities" component={InfoDisplayScreen} />
+        <Tab.Screen name="Activities" component={InfoDisplayScreen}/>
         <Tab.Screen name="Diet" component={InfoDisplayScreen}/>
         <Tab.Screen name="Settings" component={SettingsScreen}/>
     </Tab.Navigator>);
 }
 
 export const Navigation = () => {
-    return (<Stack.Navigator screenOptions={{
-        headerTitleAlign: 'center'
-    }}>
+    return (<Stack.Navigator>
         <Stack.Screen name="Home" component={BottomTabNavigator} options={{
             headerShown: false,
         }}/>
-        <Stack.Screen name="Entry" component={EntryScreen}/>
+        <Stack.Screen name="Entry" component={EntryScreen} options={
+            ({route}) => ({
+            title:
+                route.params?.type === 'activity'
+                    ? 'Add an Activity'
+                    : 'Add A Diet Entry',
+        })}/>
     </Stack.Navigator>);
 }
