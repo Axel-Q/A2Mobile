@@ -56,7 +56,7 @@ export const myStyle = {
     EachItemText: {
         fontSize: 15,
         color: 'white',
-        marginRight: 20,
+        marginRight: 10,
     },
     EachItemDuration: {
         fontSize: 15,
@@ -66,6 +66,7 @@ export const myStyle = {
     EachItemDate: {
         fontSize: 15,
         backgroundColor: 'white',
-        marginRight: 20,
+        marginRight: 15,
+        marginLeft: 5,
     },
 }

@@ -1,11 +1,6 @@
-import Feather from '@expo/vector-icons/Feather';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import {View, Text, StatusBar, StyleSheet, Button, SafeAreaView} from "react-native";
-import {myStyle} from "../helperFile/myStyle";
 import {ItemsList} from "../components/ItemsList";
 import {useState, useEffect} from "react";
-import {useRoute} from "@react-navigation/native";
-import {log} from "expo/build/devtools/logger";
 
 const InfoDisplayScreen = ({navigation, route}) => {
 

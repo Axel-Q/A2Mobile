@@ -1,5 +1,5 @@
 import {myStyle} from "../helperFile/myStyle";
-import {View, Text, TextInput, Button, Alert, FlatList} from "react-native";
+import {View, Text, TextInput, Button, Alert, FlatList, TouchableWithoutFeedback, Keyboard} from "react-native";
 import {useEffect, useState} from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import {useNavigation, useTheme} from "@react-navigation/native";
@@ -15,14 +15,33 @@ export const EntryScreen = ({navigation, route}) => {
     const [duration, setDuration] = useState(item && item.duration ? item.duration.toString() : '');
     const [activityValue, setActivityValue] = useState(item ? item.title : null);
     const [items, setItems] = useState([{label: 'Running', value: 'running'}, {
-        label: 'Cycling', value: 'cycling'
-    }, {label: 'Swimming', value: 'swimming'}, {label: 'Walking', value: 'walking'}, {
-        label: 'Weights', value: 'weights'
-    }, {label: 'Yoga', value: 'yoga'}, {label: 'Hiking', value: 'hiking'}]);
+        label: 'Walking', value: 'walking'
+    },
+        {label: 'Swimming', value: 'Swimming'},
+        {label: 'Weights', value: 'weights'},
+        {label: 'Yoga', value: 'yoga'},
+        {label: 'Hiking', value: 'hiking'}]);
     // for diet
     const [description, setDescription] = useState(item ? item.description : '');
     const [calories, setCalories] = useState(item && item.calories ? item.calories.toString() : '');
     const [open, setOpen] = useState(false);
+    // Regex pattern for number validation (positive integers or decimals)
+    // Helper function for validating numbers (both duration and calories)
+    const validateNumber = (value, fieldName) => {
+        const numberRegex = /^\d+(\.\d+)?$/;
+        if (!numberRegex.test(value)) {
+            Alert.alert('Error', `Please enter a valid ${fieldName} (positive number).`);
+            return false;
+        }
+
+        const parsedValue = parseFloat(value);
+        if (parsedValue <= 0) {
+            Alert.alert('Error', `Please enter a valid ${fieldName} (positive number greater than 0).`);
+            return false;
+        }
+
+        return true;
+    };
 
 
     const onSubmit = () => {
@@ -37,10 +56,8 @@ export const EntryScreen = ({navigation, route}) => {
                 return;
             }
 
-            // Ensure duration is a number and greater than 0
-            const parsedDuration = parseFloat(duration);
-            if (!duration || isNaN(parsedDuration) || parsedDuration <= 0) {
-                Alert.alert('Error', 'Please enter a valid duration (positive number).');
+            // Validate duration
+            if (!validateNumber(duration, 'duration')) {
                 return;
             }
 
@@ -57,10 +74,8 @@ export const EntryScreen = ({navigation, route}) => {
                 return;
             }
 
-            // Ensure calories is a number and greater than 0
-            const parsedCalories = parseFloat(calories);
-            if (!calories || isNaN(parsedCalories) || parsedCalories <= 0) {
-                Alert.alert('Error', 'Please enter valid calories (positive number).');
+            // Validate calories
+            if (!validateNumber(calories, 'calories')) {
                 return;
             }
 
@@ -77,58 +92,64 @@ export const EntryScreen = ({navigation, route}) => {
     };
 
 
-    return (<View style={{padding: 16}}>
-        {type === 'activity' ? (<>
-            {/* Activity Form */}
-            <Text style={{textAlign: 'left', marginBottom: 8}}>Activity *</Text>
-            <DropDownPicker
-                open={open}
-                value={activityValue}
-                items={items}
-                setOpen={setOpen}
-                setValue={setActivityValue}
-                setItems={setItems}
-                containerStyle={{marginBottom: 16}}
-            />
+    return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={{flex: 1}}>
+                <View style={{padding: 16}}>
+                    {type === 'activity' ? (<>
+                        {/* Activity Form */}
+                        <Text style={{textAlign: 'left', marginBottom: 8}}>Activity *</Text>
+                        <DropDownPicker
+                            open={open}
+                            value={activityValue}
+                            items={items}
+                            setOpen={setOpen}
+                            setValue={setActivityValue}
+                            setItems={setItems}
+                            containerStyle={{marginBottom: 16}}
+                        />
 
-            <Text style={{textAlign: 'left', marginBottom: 8}}>Duration (min) *</Text>
-            <TextInput
-                onChangeText={setDuration}
-                value={duration}
-                keyboardType="number-pad"
-                style={{
-                    borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
-                }}
-            />
-        </>) : (<>
-            {/* Diet Form */}
-            <Text style={{textAlign: 'left', marginBottom: 8}}>Description *</Text>
-            <TextInput
-                onChangeText={setDescription}
-                value={description}
-                numberOfLines={4}
-                style={{
-                    borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
-                }}
-            />
+                        <Text style={{textAlign: 'left', marginBottom: 8}}>Duration (min) *</Text>
+                        <TextInput
+                            onChangeText={setDuration}
+                            value={duration}
+                            keyboardType="number-pad"
+                            style={{
+                                borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
+                            }}
+                        />
+                    </>) : (<>
+                        {/* Diet Form */}
+                        <Text style={{textAlign: 'left', marginBottom: 8}}>Description *</Text>
+                        <TextInput
+                            onChangeText={setDescription}
+                            value={description}
+                            numberOfLines={4}
+                            style={{
+                                borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
+                            }}
+                        />
 
-            <Text style={{textAlign: 'left', marginBottom: 8}}>Calories *</Text>
-            <TextInput
-                onChangeText={setCalories}
-                value={calories}
-                keyboardType="number-pad"
-                style={{
-                    borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
-                }}
-            />
-        </>)}
-        {/* Common Date Picker */}
-        <Text style={{textAlign: 'left', marginBottom: 8}}>Date *</Text>
-        <CustomizedDatePicker selectedDate={date} onDateSelect={setDate}/>
+                        <Text style={{textAlign: 'left', marginBottom: 8}}>Calories *</Text>
+                        <TextInput
+                            onChangeText={setCalories}
+                            value={calories}
+                            keyboardType="number-pad"
+                            style={{
+                                borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
+                            }}
+                        />
+                    </>)}
+                    {/* Common Date Picker */}
+                    <Text style={{textAlign: 'left', marginBottom: 8}}>Date *</Text>
+                    <CustomizedDatePicker selectedDate={date} onDateSelect={setDate}/>
 
-        <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 220}}>
-            <Button title="Add Item" onPress={onSubmit}/>
-            <Button title={"Cancel"} onPress={() => navigation.navigate('Home')}/>
-        </View>
-    </View>);
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 220}}>
+                        <Button title="Add Item" onPress={onSubmit}/>
+                        <Button title={"Cancel"} onPress={() => navigation.navigate('Home')}/>
+                    </View>
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
+    )
 }
