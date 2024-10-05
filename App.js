@@ -1,6 +1,6 @@
 import {StatusBar} from 'expo-status-bar';
 import {StyleSheet, Text, View} from 'react-native';
-import {ThemeProvider} from "./helperFile/Theme";
+import {ThemeProvider} from "./context/Theme";
 import InfoDisplayScreen from './screens/InfoDisplayScreen';
 import {Navigation} from './navigation/Navigation';
 import {NavigationContainer} from "@react-navigation/native";
@@ -9,7 +9,7 @@ import {NavigationContainer} from "@react-navigation/native";
 export default function App() {
     return (
         <ThemeProvider>
-            <NavigationContainer>
+            <NavigationContainer >
                 <StatusBar style="auto"/>
                     <Navigation/>
             </NavigationContainer>

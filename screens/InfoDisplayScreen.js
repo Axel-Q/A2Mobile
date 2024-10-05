@@ -1,52 +1,18 @@
-import {View, Text, StatusBar, StyleSheet, Button, SafeAreaView} from "react-native";
+import {View, Text, StatusBar, StyleSheet, Button, SafeAreaView, TouchableOpacity} from "react-native";
 import {ItemsList} from "../components/ItemsList";
-import {useState, useEffect, createContext} from "react";
-
-
+import React, { useState, useEffect, createContext, useContext } from "react";
+import {ItemContext} from "../context/ItemContext";
+import {ThemeContext, ThemeProvider} from '../context/Theme';
 
 
 const InfoDisplayScreen = ({navigation, route}) => {
+    const {itemList} = useContext(ItemContext);
+    const type = route.name === 'Activities' ? 'activity' : 'diet';
+    const {theme} = useContext(ThemeContext);
 
     useEffect(() => {
         console.log('Updated itemList:', itemList);
     }, [itemList]);
-
-
-    const [itemList, setItemList] = useState([]);
-
-    const handleAdd = (itemData) => {
-        const {id, type} = itemData;
-        let newItem = {id: id || Date.now(), type};
-
-        if (type === 'activity') {
-            newItem = {
-                ...newItem,
-                title: itemData.title,
-                time: itemData.time instanceof Date ? itemData.time : new Date(itemData.time),
-                duration: itemData.duration,
-            };
-        } else if (type === 'diet') {
-            newItem = {
-                ...newItem,
-                description: itemData.description,
-                date: itemData.date instanceof Date ? itemData.date : new Date(itemData.date),
-                calories: itemData.calories,
-            };
-        }
-
-        setItemList((prevItemList) => {
-            if (id) {
-                // Update existing item
-                return prevItemList.map((item) => (item.id === id ? newItem : item));
-            } else {
-                // Add new item
-                return [...prevItemList, newItem];
-            }
-        });
-    };
-
-
-    const type = route.name === 'Activities' ? 'activity' : 'diet';
 
     useEffect(() => {
         navigation.setOptions({
@@ -54,16 +20,17 @@ const InfoDisplayScreen = ({navigation, route}) => {
                 <View>
                     <Button
                         title="Add"
-                        onPress={() => navigation.navigate('Entry', {type, handleAdd})}
+                        onPress={() => navigation.navigate('Entry', {type})}
                     />
                 </View>
             ),
         });
-    }, [navigation, type, handleAdd]);
-
+    }, [navigation, type]);
+    // Filter items based on the current type (activity or diet)
+    const filteredItemList = itemList.filter(item => item.type === type);
     return (<SafeAreaView>
-        <View>
-            <ItemsList itemList={itemList} type={type} handleAdd={handleAdd}/>
+        <View >
+            <ItemsList itemList={filteredItemList} type={type}/>
         </View>
     </SafeAreaView>);
 }

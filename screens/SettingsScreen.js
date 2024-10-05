@@ -1,11 +1,22 @@
-import {myStyle} from "../helperFile/myStyle";
-import {View, Text} from "react-native";
-import AntDesign from '@expo/vector-icons/AntDesign';
+import React, { useContext } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { ThemeContext } from '../context/Theme';
 
 export const SettingsScreen = () => {
+    const { theme, toggleTheme } = useContext(ThemeContext);
+
     return (
-        <View style={myStyle.homePageContainer}>
-            <Text>Settings</Text>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <TouchableOpacity
+                onPress={toggleTheme}
+                style={{
+                    backgroundColor: theme.headerBottom,
+                    padding: 10,
+                    borderRadius: 5,
+                }}
+            >
+                <Text style={{ color: 'white' }}>Toggle Theme</Text>
+            </TouchableOpacity>
         </View>
     );
-}
+};

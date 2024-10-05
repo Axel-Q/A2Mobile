@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
 import InfoDisplayScreen from "../screens/InfoDisplayScreen";
@@ -7,14 +7,15 @@ import Feather from "@expo/vector-icons/Feather";
 import {SettingsScreen} from "../screens/SettingsScreen";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import {EntryScreen} from "../screens/EntryScreen";
-import {} from "../helperFile/Theme";
 import {ItemContext} from "../context/ItemContext";
+import {ThemeContext} from "../context/Theme";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 
 const BottomTabNavigator = () => {
+    const {theme, toggleTheme} = useContext(ThemeContext);
     return (<Tab.Navigator screenOptions={({route}) => ({
         tabBarIcon: ({color, size}) => {
             let iconName;
@@ -32,9 +33,16 @@ const BottomTabNavigator = () => {
             return <IconComponent name={iconName} size={size} color={color}/>;
         },
         headerTitleAlign: 'center',
+        tabBarActiveTintColor: 'tomato',
+        headerStyle: {
+            backgroundColor: theme.headerBottom,
+        },
+        tabBarStyle: {
+            backgroundColor: theme.headerBottom,
+        },
     })}
     >
-        <Tab.Screen name="Activities" component={InfoDisplayScreen}/>
+        <Tab.Screen name="Activities" component={InfoDisplayScreen} />
         <Tab.Screen name="Diet" component={InfoDisplayScreen}/>
         <Tab.Screen name="Settings" component={SettingsScreen}/>
     </Tab.Navigator>);
@@ -42,6 +50,7 @@ const BottomTabNavigator = () => {
 
 export const Navigation = () => {
     const [itemList, setItemList] = useState([]);
+    const {theme, toggleTheme} = useContext(ThemeContext);
     return (
         <ItemContext.Provider value={{itemList, setItemList}}>
             <Stack.Navigator>
@@ -53,9 +62,10 @@ export const Navigation = () => {
                         title:
                             route.params?.type === 'activity'
                                 ? 'Add an Activity'
-                                : 'Add A Diet Entry',
+                                : 'Add A Diet Entry', headerStyle: {
+                            backgroundColor: theme.headerBottom, // Use the theme background color here
+                        },
                     })}/>
             </Stack.Navigator>
         </ItemContext.Provider>);
-
 }

@@ -5,8 +5,9 @@ import {myStyle} from "../helperFile/myStyle";
 import {Text} from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-export const ItemsList = ({itemList, type, handleAdd}) => {
+export const ItemsList = ({itemList, type}) => {
     const {width} = Dimensions.get('window');
+
     const navigation = useNavigation();
     console.log('ItemsList received itemList:', itemList);
     const renderItem = ({item}) => {
@@ -22,7 +23,7 @@ export const ItemsList = ({itemList, type, handleAdd}) => {
         const showDietIcon = item.calories && item.calories > 800;
         return (
             <TouchableOpacity
-                onPress={() => navigation.navigate("Entry", {item: serializableItem, type, handleAdd})}
+                onPress={() => navigation.navigate("Entry", {item: serializableItem, type})}
             >
                 <View style={[myStyle.EachItemContainer, {width: width * 0.85}]}>
                     {type === 'activity' ? (

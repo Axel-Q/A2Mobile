@@ -1,29 +1,30 @@
 import {myStyle} from "../helperFile/myStyle";
 import {View, Text, TextInput, Button, Alert, FlatList, TouchableWithoutFeedback, Keyboard} from "react-native";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import {useNavigation, useTheme} from "@react-navigation/native";
 import CustomizedDatePicker from "../components/CustomizedDatePicker";
+import {ItemContext} from "../context/ItemContext";
 
 export const EntryScreen = ({navigation, route}) => {
-    const {handleAdd, type, item} = route.params;
+    const {itemList, setItemList} = useContext(ItemContext);
+    const {type, item} = route.params;
 
-    // for activity
     // Convert date strings back to Date objects
     const initialDate = item ? item.date ? new Date(item.date) : item.time ? new Date(item.time) : null : null;
     const [date, setDate] = useState(initialDate);
     const [duration, setDuration] = useState(item && item.duration ? item.duration.toString() : '');
     const [activityValue, setActivityValue] = useState(item ? item.title : null);
-    const [items, setItems] = useState([{label: 'Running', value: 'running'}, {
-        label: 'Walking', value: 'walking'
-    },
-        {label: 'Swimming', value: 'Swimming'},
-        {label: 'Weights', value: 'weights'},
-        {label: 'Yoga', value: 'yoga'},
-        {label: 'Hiking', value: 'hiking'}]);
-    // for diet
     const [description, setDescription] = useState(item ? item.description : '');
     const [calories, setCalories] = useState(item && item.calories ? item.calories.toString() : '');
+    const [items, setItems] = useState([
+        {label: 'Running', value: 'running'},
+        {label: 'Walking', value: 'walking'},
+        {label: 'Swimming', value: 'swimming'},
+        {label: 'Weights', value: 'weights'},
+        {label: 'Yoga', value: 'yoga'},
+        {label: 'Hiking', value: 'hiking'},
+    ]);
     const [open, setOpen] = useState(false);
     // Regex pattern for number validation (positive integers or decimals)
     // Helper function for validating numbers (both duration and calories)
@@ -43,6 +44,34 @@ export const EntryScreen = ({navigation, route}) => {
         return true;
     };
 
+    const handleAdd = (itemData) => {
+        const {id, type} = itemData;
+        let newItem = {id: id || Date.now(), type};
+
+        if (type === 'activity') {
+            newItem = {
+                ...newItem,
+                title: itemData.title,
+                time: itemData.time instanceof Date ? itemData.time : new Date(itemData.time),
+                duration: itemData.duration,
+            };
+        } else if (type === 'diet') {
+            newItem = {
+                ...newItem,
+                description: itemData.description,
+                date: itemData.date instanceof Date ? itemData.date : new Date(itemData.date),
+                calories: itemData.calories,
+            };
+        }
+
+        setItemList((prevItemList) => {
+            if (id) {
+                return prevItemList.map((item) => (item.id === id ? newItem : item));
+            } else {
+                return [...prevItemList, newItem];
+            }
+        });
+    };
 
     const onSubmit = () => {
         if (!date) {
@@ -60,7 +89,6 @@ export const EntryScreen = ({navigation, route}) => {
             if (!validateNumber(duration, 'duration')) {
                 return;
             }
-
             handleAdd({
                 id: item ? item.id : null,
                 type: 'activity',
@@ -145,7 +173,7 @@ export const EntryScreen = ({navigation, route}) => {
                     <CustomizedDatePicker selectedDate={date} onDateSelect={setDate}/>
 
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 220}}>
-                        <Button title="Add Item" onPress={onSubmit}/>
+                        <Button title="To Save" onPress={onSubmit}/>
                         <Button title={"Cancel"} onPress={() => navigation.navigate('Home')}/>
                     </View>
                 </View>
