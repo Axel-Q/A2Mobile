@@ -6,12 +6,12 @@ export const ThemeProvider = ({children}) => {
     const lightTheme = {
         headerBottom: '#026154',
         middlePart: '#edfffd',
-        buttonColor: '#faa5a5',
+        itermColor: '#faa5a5',
     }
     const darkTheme = {
         headerBottom: '#716b5f',
         middlePart: '#ecddc6',
-        buttonColor: '#9302aa',
+        itermColor: 'rgb(184,184,1)',
     }
     const [isLightTheme, setIsLightTheme] = useState(true);
     const toggleTheme = () => {

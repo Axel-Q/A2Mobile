@@ -1,12 +1,14 @@
-import React from "react";
+import React, {useContext} from "react";
 import {useNavigation} from "@react-navigation/native";
 import {Dimensions, FlatList, TouchableOpacity, View} from "react-native";
 import {myStyle} from "../helperFile/myStyle";
 import {Text} from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import {ThemeContext} from "../context/Theme";
 
 export const ItemsList = ({itemList, type}) => {
     const {width} = Dimensions.get('window');
+    const {theme} = useContext(ThemeContext);
 
     const navigation = useNavigation();
     console.log('ItemsList received itemList:', itemList);
@@ -25,7 +27,7 @@ export const ItemsList = ({itemList, type}) => {
             <TouchableOpacity
                 onPress={() => navigation.navigate("Entry", {item: serializableItem, type})}
             >
-                <View style={[myStyle.EachItemContainer, {width: width * 0.85}]}>
+                <View style={[myStyle.EachItemContainer, {width: width * 0.85}, { backgroundColor: theme.itermColor}]}>
                     {type === 'activity' ? (
                         <>
                             <Text style={myStyle.EachItemText}>{item.title}</Text>

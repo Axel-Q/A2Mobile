@@ -49,7 +49,6 @@ export const myStyle = {
     EachItemContainer: {
         padding: 15,
         flexDirection: 'row',
-        backgroundColor: 'rgb(184,184,1)',
         marginVertical: 10, // Add gap between items
         borderRadius: 10, // Optional: add rounded corners
     },
