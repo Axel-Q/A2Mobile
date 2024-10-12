@@ -38,6 +38,7 @@ export const EntryScreen = ({navigation, route}) => {
         {label: 'Swimming', value: 'swimming'},
         {label: 'Weights', value: 'weights'},
         {label: 'Yoga', value: 'yoga'},
+        {label: 'Cycling', value: 'cycling'},
         {label: 'Hiking', value: 'hiking'},
     ]);
     const [open, setOpen] = useState(false);

@@ -7,8 +7,8 @@
  */
 
 
-import React, { useState } from 'react';
-import { View, TextInput, Button, Platform } from 'react-native';
+import React, {useState, useRef} from 'react';
+import {View, TextInput, Button, Platform} from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {myStyle} from "../helperFile/myStyle";
 
@@ -22,40 +22,55 @@ import {myStyle} from "../helperFile/myStyle";
  * @param {function} props.onDateSelect - Callback function to pass the selected date back to the parent component.
  * @returns {JSX.Element} The rendered component.
  */
-export default function CustomizedDatePicker({ selectedDate, onDateSelect }) {
-  const [isPickerVisible, setPickerVisible] = useState(false);
+export default function CustomizedDatePicker({selectedDate, onDateSelect}) {
+    const [isPickerVisible, setPickerVisible] = useState(false);
+    const textInputRef = useRef(null);
 
-  const handleDateChange = (event, newDate) => {
-    const pickedDate = newDate || selectedDate;
-    setPickerVisible(Platform.OS === 'ios'); // Keep picker open for iOS only
-    onDateSelect(pickedDate); // Callback for parent component
-  };
+    const handleDateChange = (event, newDate) => {
+        if (Platform.OS === 'android') {
+            // For Android, check if the event type is 'set' (date selected) or 'dismissed'
+            if (event.type === 'set') {
+                const pickedDate = newDate || selectedDate;
+                onDateSelect(pickedDate);
+            }
+            setPickerVisible(false); // Close the picker
+        } else {
+            // For iOS, update the date as the picker is 'inline'
+            const pickedDate = newDate || selectedDate;
+            onDateSelect(pickedDate);
+        }
+        // Blur the TextInput to lose focus
+        if (textInputRef.current) {
+            textInputRef.current.blur();
+        }
+    };
 
-  const openDatePicker = () => {
-    setPickerVisible(true);
-  };
+    const openDatePicker = () => {
+        setPickerVisible(true);
+    };
 
-  return (
-    <View>
-      <TextInput
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, padding: 10 }}
-        placeholder="Select Date"
-        value={selectedDate ? selectedDate.toLocaleDateString() : ''}
-        onFocus={openDatePicker}
-        showSoftInputOnFocus={false} // Prevents keyboard from showing when focused
-      />
-      {isPickerVisible && (
-        <DateTimePicker
-          value={selectedDate || new Date()}
-          mode="date"
-          display="inline"
-          onChange={handleDateChange}
+    return (
+        <View>
+            <TextInput
+                ref={textInputRef}
+                style={{height: 40, borderColor: 'gray', borderWidth: 1, padding: 10}}
+                placeholder="Select Date"
+                value={selectedDate ? selectedDate.toLocaleDateString() : ''}
+                onFocus={openDatePicker}
+                showSoftInputOnFocus={false} // Prevents keyboard from showing when focused
+            />
+            {isPickerVisible && (
+                <DateTimePicker
+                    value={selectedDate || new Date()}
+                    mode="date"
+                    display="inline"
+                    onChange={handleDateChange}
 
-        />
-      )}
-      {Platform.OS === 'ios' && isPickerVisible && (
-        <Button title="Done" onPress={() => setPickerVisible(false)} />
-      )}
-    </View>
-  );
+                />
+            )}
+            {Platform.OS === 'ios' && isPickerVisible && (
+                <Button title="Done" onPress={() => setPickerVisible(false)}/>
+            )}
+        </View>
+    );
 }
