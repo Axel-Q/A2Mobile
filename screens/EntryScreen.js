@@ -7,7 +7,7 @@
 
 import {myStyle} from "../helperFile/myStyle";
 import {View, Text, TextInput, Button, Alert, FlatList, TouchableWithoutFeedback, Keyboard} from "react-native";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useState, useRef} from "react";
 import DropDownPicker from "react-native-dropdown-picker";
 import {useNavigation, useTheme} from "@react-navigation/native";
 import CustomizedDatePicker from "../components/CustomizedDatePicker";
@@ -24,6 +24,10 @@ import {ItemContext} from "../context/ItemContext";
 export const EntryScreen = ({navigation, route}) => {
     const {itemList, setItemList} = useContext(ItemContext);
     const {type, item} = route.params;
+    const durationInputRef = useRef(null);
+    const caloriesInputRef = useRef(null);
+    const descriptionInputRef = useRef(null);
+
 
     // Convert date strings back to Date objects
     const initialDate = item ? item.date ? new Date(item.date) : item.time ? new Date(item.time) : null : null;
@@ -42,18 +46,47 @@ export const EntryScreen = ({navigation, route}) => {
         {label: 'Hiking', value: 'hiking'},
     ]);
     const [open, setOpen] = useState(false);
+    const [isPickerVisible, setDatePickerVisible] = useState(false);
     // Regex pattern for number validation (positive integers or decimals)
     // Helper function for validating numbers (both duration and calories)
-    const validateNumber = (value, fieldName) => {
+    const validateNumber = (value, fieldName, inputRef) => {
         const numberRegex = /^\d+(\.\d+)?$/;
         if (!numberRegex.test(value)) {
-            Alert.alert('Error', `Please enter a valid ${fieldName} (positive number).`);
+            Alert.alert(
+                'Invalid Input',
+                `Please enter a valid ${fieldName} (positive number).`,
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => {
+                            if (inputRef && inputRef.current) {
+                                inputRef.current.focus();
+                            }
+                        },
+                    },
+                ],
+                {cancelable: false}
+            );
             return false;
         }
 
         const parsedValue = parseFloat(value);
         if (parsedValue <= 0) {
-            Alert.alert('Error', `Please enter a valid ${fieldName} (positive number greater than 0).`);
+            Alert.alert(
+                'Invalid Input',
+                `Please enter a valid ${fieldName} (positive number greater than 0).`,
+                [
+                    {
+                        text: 'OK',
+                        onPress: () => {
+                            if (inputRef && inputRef.current) {
+                                inputRef.current.focus();
+                            }
+                        },
+                    },
+                ],
+                {cancelable: false}
+            );
             return false;
         }
 
@@ -91,41 +124,72 @@ export const EntryScreen = ({navigation, route}) => {
 
     const onSubmit = () => {
         if (!date) {
-            Alert.alert('Error', 'Please select a date.');
+            Alert.alert(
+                "Missing Date",
+                "Please select a date.",
+                [{text: "OK"}],
+                {cancelable: false}
+            );
             return;
         }
 
-        if (type === 'activity') {
+        if (type === "activity") {
             if (!activityValue) {
-                Alert.alert('Error', 'Please select an activity.');
+                Alert.alert(
+                    "Missing Activity",
+                    "Please select an activity.",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                setOpen(true); // Open the DropDownPicker
+                            },
+                        },
+                    ],
+                    {cancelable: false}
+                );
                 return;
             }
 
             // Validate duration
-            if (!validateNumber(duration, 'duration')) {
+            if (!validateNumber(duration, "duration", durationInputRef)) {
                 return;
             }
             handleAdd({
                 id: item ? item.id : null,
-                type: 'activity',
+                type: "activity",
                 title: activityValue,
                 time: date,
                 duration: parseFloat(duration),
             });
-        } else if (type === 'diet') {
+        } else if (type === "diet") {
             if (!description) {
-                Alert.alert('Error', 'Please enter a description.');
+                Alert.alert(
+                    "Missing Description",
+                    "Please enter a description.",
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                if (descriptionInputRef && descriptionInputRef.current) {
+                                    descriptionInputRef.current.focus();
+                                }
+                            },
+                        },
+                    ],
+                    {cancelable: false}
+                );
                 return;
             }
 
             // Validate calories
-            if (!validateNumber(calories, 'calories')) {
+            if (!validateNumber(calories, "calories", caloriesInputRef)) {
                 return;
             }
 
             handleAdd({
                 id: item ? item.id : null,
-                type: 'diet',
+                type: "diet",
                 description: description.trim(),
                 date: date,
                 calories: parseFloat(calories),
@@ -135,7 +199,16 @@ export const EntryScreen = ({navigation, route}) => {
         navigation.goBack();
     };
 
-
+    // Function to handle opening the date picker
+    const onOpenDatePicker = () => {
+        setDatePickerVisible(true);
+        // Blur any focused TextInput
+        if (durationInputRef.current) durationInputRef.current.blur();
+        if (descriptionInputRef.current) descriptionInputRef.current.blur();
+        if (caloriesInputRef.current) caloriesInputRef.current.blur();
+        // Close DropDownPicker
+        setOpen(false);
+    };
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={{flex: 1}}>
@@ -147,7 +220,18 @@ export const EntryScreen = ({navigation, route}) => {
                             open={open}
                             value={activityValue}
                             items={items}
-                            setOpen={setOpen}
+                            setOpen={(value) => {
+                                setOpen(value);
+                                if (value) {
+                                    // DropDownPicker is opening
+                                    // Blur any focused TextInput
+                                    if (durationInputRef.current) durationInputRef.current.blur();
+                                    if (descriptionInputRef.current) descriptionInputRef.current.blur();
+                                    if (caloriesInputRef.current) caloriesInputRef.current.blur();
+                                    // Close DatePicker
+                                    setDatePickerVisible(false);
+                                }
+                            }}
                             setValue={setActivityValue}
                             setItems={setItems}
                             containerStyle={{marginBottom: 16}}
@@ -155,9 +239,14 @@ export const EntryScreen = ({navigation, route}) => {
 
                         <Text style={{textAlign: 'left', marginBottom: 8}}>Duration (min) *</Text>
                         <TextInput
+                            ref={durationInputRef}
                             onChangeText={setDuration}
                             value={duration}
                             keyboardType="number-pad"
+                            onFocus={() => {
+                                setOpen(false);
+                                setDatePickerVisible(false);
+                            }}
                             style={{
                                 borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
                             }}
@@ -166,9 +255,14 @@ export const EntryScreen = ({navigation, route}) => {
                         {/* Diet Form */}
                         <Text style={{textAlign: 'left', marginBottom: 8}}>Description *</Text>
                         <TextInput
+                            ref={descriptionInputRef}
                             onChangeText={setDescription}
                             value={description}
                             numberOfLines={4}
+                            onFocus={() => {
+                                setOpen(false);
+                                setDatePickerVisible(false);
+                            }}
                             style={{
                                 borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
                             }}
@@ -176,9 +270,14 @@ export const EntryScreen = ({navigation, route}) => {
 
                         <Text style={{textAlign: 'left', marginBottom: 8}}>Calories *</Text>
                         <TextInput
+                            ref={caloriesInputRef}
                             onChangeText={setCalories}
                             value={calories}
                             keyboardType="number-pad"
+                            onFocus={() => {
+                                setOpen(false);
+                                setDatePickerVisible(false);
+                            }}
                             style={{
                                 borderWidth: 1, borderColor: 'gray', borderRadius: 5, padding: 10, marginBottom: 16,
                             }}
@@ -186,7 +285,10 @@ export const EntryScreen = ({navigation, route}) => {
                     </>)}
                     {/* Common Date Picker */}
                     <Text style={{textAlign: 'left', marginBottom: 8}}>Date *</Text>
-                    <CustomizedDatePicker selectedDate={date} onDateSelect={setDate}/>
+                    <CustomizedDatePicker selectedDate={date} onDateSelect={setDate}
+                                          isPickerVisible={isPickerVisible}
+                                          setPickerVisible={setDatePickerVisible}
+                                          onOpenDatePicker={onOpenDatePicker}/>
 
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 220}}>
                         <Button title="To Save" onPress={onSubmit}/>
