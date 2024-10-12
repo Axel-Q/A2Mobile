@@ -1,3 +1,10 @@
+/**
+ * `Navigation.js` is a JavaScript file that sets up the navigation structure for a React Native application.
+ * It uses React Navigation to create a bottom tab navigator and a stack navigator.
+ * The bottom tab navigator includes screens for activities, diet, and settings, each with its own icon.
+ * The stack navigator includes the home screen (which contains the bottom tab navigator) and an entry screen for adding new entries.
+ */
+
 import React, {useContext, useState} from "react";
 import {createBottomTabNavigator} from "@react-navigation/bottom-tabs";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
@@ -13,7 +20,12 @@ import {ThemeContext} from "../context/Theme";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-
+/**
+ * BottomTabNavigator component that sets up the bottom tab navigation.
+ * It includes screens for activities, diet, and settings, each with its own icon.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 const BottomTabNavigator = () => {
     const {theme, toggleTheme} = useContext(ThemeContext);
     return (<Tab.Navigator screenOptions={({route}) => ({
@@ -48,6 +60,12 @@ const BottomTabNavigator = () => {
     </Tab.Navigator>);
 }
 
+/**
+ * Navigation component that sets up the stack navigation.
+ * It includes the home screen (which contains the bottom tab navigator) and an entry screen for adding new entries.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export const Navigation = () => {
     const [itemList, setItemList] = useState([]);
     const {theme, toggleTheme} = useContext(ThemeContext);

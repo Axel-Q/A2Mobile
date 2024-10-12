@@ -1,3 +1,12 @@
+/**
+ * EntryScreen component that allows users to add or edit entries for activities or diet.
+ *
+ * @param {object} props - The component props.
+ * @param {object} props.navigation - The navigation object provided by React Navigation.
+ * @param {object} props.route - The route object provided by React Navigation.
+ * @returns {JSX.Element} The rendered component.
+ */
+
 import React, {useContext} from "react";
 import {useNavigation} from "@react-navigation/native";
 import {Dimensions, FlatList, TouchableOpacity, View} from "react-native";
@@ -6,6 +15,15 @@ import {Text} from "react-native";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import {ThemeContext} from "../context/Theme";
 
+
+/**
+ * EntryScreen component that allows users to add or edit entries for activities or diet.
+ *
+ * @param {object} props - The component props.
+ * @param {object} props.navigation - The navigation object provided by React Navigation.
+ * @param {object} props.route - The route object provided by React Navigation.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const ItemsList = ({itemList, type}) => {
     const {width} = Dimensions.get('window');
     const {theme} = useContext(ThemeContext);

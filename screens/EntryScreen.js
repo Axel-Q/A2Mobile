@@ -1,3 +1,10 @@
+/**
+ * `EntryScreen.js` is a JavaScript file that defines the `EntryScreen` component for a React Native application.
+ * This screen allows users to add or edit entries for activities or diet.
+ * It includes form fields for selecting an activity, entering duration, description, calories, and a date picker.
+ * The component uses context to manage the list of items and updates the list upon form submission.
+ */
+
 import {myStyle} from "../helperFile/myStyle";
 import {View, Text, TextInput, Button, Alert, FlatList, TouchableWithoutFeedback, Keyboard} from "react-native";
 import {useContext, useEffect, useState} from "react";
@@ -6,6 +13,14 @@ import {useNavigation, useTheme} from "@react-navigation/native";
 import CustomizedDatePicker from "../components/CustomizedDatePicker";
 import {ItemContext} from "../context/ItemContext";
 
+/**
+ * EntryScreen component that allows users to add or edit entries for activities or diet.
+ *
+ * @param {object} props - The component props.
+ * @param {object} props.navigation - The navigation object provided by React Navigation.
+ * @param {object} props.route - The route object provided by React Navigation.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const EntryScreen = ({navigation, route}) => {
     const {itemList, setItemList} = useContext(ItemContext);
     const {type, item} = route.params;

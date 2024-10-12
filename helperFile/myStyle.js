@@ -1,3 +1,10 @@
+/**
+ * File Explanation
+ * `myStyle.js` is a JavaScript file that defines a set of styles for a React Native application.
+ * These styles are used to style various components and elements within the application, such as containers, items, titles, buttons, and text.
+ * The styles are defined as a JavaScript object and exported for use in other parts of the application.
+ */
+
 export const myStyle = {
     homePageContainer: {
         flex: 1,
