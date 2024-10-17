@@ -64,8 +64,7 @@ export const ItemsList = ({ itemList, type }) => {
     };
 
     // Check conditions for displaying the special icon
-    const showActivityIcon = (item.title === 'running' || item.title === 'weights') && item.duration > 60;
-    const showDietIcon = item.calories && item.calories > 800;
+    const showIcon = (item.isSpecial && !item.isChecked)
 
     return (
       <TouchableOpacity
@@ -76,14 +75,14 @@ export const ItemsList = ({ itemList, type }) => {
             <>
               <Text style={myStyle.EachItemText}>{item.title}</Text>
               {/* Show icon if the conditions are met */}
-              {showActivityIcon && <AntDesign name={'warning'} size={24} color={'red'} />}
+              {showIcon && <AntDesign name={'warning'} size={24} color={'red'} />}
               <Text style={myStyle.EachItemDate}>{formatDate(item.time)}</Text>
               <Text style={myStyle.EachItemDuration}>{item.duration} Min</Text>
             </>
           ) : (
             <>
               <Text style={myStyle.EachItemText}>{item.description}</Text>
-              {showDietIcon && <AntDesign name={'warning'} size={24} color={'red'} />}
+              {showIcon && <AntDesign name={'warning'} size={24} color={'red'} />}
               <Text style={myStyle.EachItemDate}>{formatDate(item.date)}</Text>
               <Text style={myStyle.EachItemDuration}>{item.calories} Calories</Text>
             </>

@@ -25,8 +25,9 @@ import Checkbox from 'expo-checkbox';
  * @returns {JSX.Element} The rendered component.
  */
 export const EntryScreen = ({navigation, route}) => {
-    const [isChecked, setChecked] = useState(false);
     const {type, item} = route.params;
+    const [isChecked, setChecked] = useState(item ? item.isChecked : false);
+    const [isSpecial, setSpecial] = useState(item ? item.isSpecial : false);
     const durationInputRef = useRef(null);
     const caloriesInputRef = useRef(null);
     const descriptionInputRef = useRef(null);
@@ -427,19 +428,20 @@ export const EntryScreen = ({navigation, route}) => {
                                           isPickerVisible={isPickerVisible}
                                           setPickerVisible={setDatePickerVisible}
                                           onOpenDatePicker={onOpenDatePicker}/>
-                    <View style={myStyle.specialItemContainer}>
-                        <View style={myStyle.textContainer}>
-                            <Text style={myStyle.specialItemText}>
-                                This Item is marked as special. Select the checkbox if you would like to approve it
-                            </Text>
-                        </View>
-                        <View style={myStyle.checkboxContainer}>
-                            <Checkbox
-                                value={isChecked}
-                                onValueChange={setChecked}
-                            />
-                        </View>
-                    </View>
+                    {isSpecial && !isChecked && (
+                        <View style={myStyle.specialItemContainer}>
+                            <View style={myStyle.textContainer}>
+                                <Text style={myStyle.specialItemText}>
+                                    This Item is marked as special. Select the checkbox if you would like to approve it
+                                </Text>
+                            </View>
+                            <View style={myStyle.checkboxContainer}>
+                                <Checkbox
+                                    value={isChecked}
+                                    onValueChange={setChecked}
+                                />
+                            </View>
+                        </View>)}
 
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 20}}>
                         <Button title={"Cancel"} onPress={() => navigation.navigate('Home')}/>
