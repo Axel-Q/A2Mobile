@@ -47,7 +47,7 @@ export const myStyle = {
     }, EachItemDate: {
         fontSize: 15, backgroundColor: reusableColor.white, marginRight: 15, marginLeft: 5,
     }, specialItemContainer: {
-        flexDirection: 'row', paddingTop: 220, paddingBottom: 20, alignItems: 'center',
+        flexDirection: 'row', paddingBottom: 20, alignItems: 'center',
     }, textContainer: {
         flex: 1, marginRight: 10,
     }, specialItemText: {

@@ -428,24 +428,32 @@ export const EntryScreen = ({navigation, route}) => {
                                           isPickerVisible={isPickerVisible}
                                           setPickerVisible={setDatePickerVisible}
                                           onOpenDatePicker={onOpenDatePicker}/>
-                    {isSpecial && !isChecked && (
-                        <View style={myStyle.specialItemContainer}>
-                            <View style={myStyle.textContainer}>
-                                <Text style={myStyle.specialItemText}>
-                                    This Item is marked as special. Select the checkbox if you would like to approve it
-                                </Text>
-                            </View>
-                            <View style={myStyle.checkboxContainer}>
-                                <Checkbox
-                                    value={isChecked}
-                                    onValueChange={setChecked}
-                                />
-                            </View>
-                        </View>)}
 
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 20}}>
-                        <Button title={"Cancel"} onPress={() => navigation.navigate('Home')}/>
-                        <Button title="To Save" onPress={onSubmit}/>
+                    <View style={{paddingTop: 300}}>
+                        {isSpecial && (!item || !item.isChecked) && (
+                            <View style={myStyle.specialItemContainer}>
+                                <View style={myStyle.textContainer}>
+                                    <Text style={myStyle.specialItemText}>
+                                        This Item is marked as special. Select the checkbox if you would like to approve
+                                        it
+                                    </Text>
+                                </View>
+                                <View style={myStyle.checkboxContainer}>
+                                    <Checkbox
+                                        value={isChecked}
+                                        onValueChange={setChecked}
+                                    />
+                                </View>
+                            </View>)}
+
+                        <View style={{flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
+                            <View style={{marginRight: 10}}>
+                                <Button title="Cancel" onPress={() => navigation.navigate('Home')} color='red'/>
+                            </View>
+                            <View style={{marginLeft: 10}}>
+                                <Button title="Save" onPress={onSubmit}/>
+                            </View>
+                        </View>
                     </View>
                 </View>
             </View>
