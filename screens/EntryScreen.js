@@ -23,7 +23,6 @@ import {addItem, updateItem, deleteItem} from "../firebase/firebaseHelper";
  * @returns {JSX.Element} The rendered component.
  */
 export const EntryScreen = ({navigation, route}) => {
-    const {itemList, setItemList} = useContext(ItemContext);
     const {type, item} = route.params;
     const durationInputRef = useRef(null);
     const caloriesInputRef = useRef(null);
@@ -96,20 +95,20 @@ export const EntryScreen = ({navigation, route}) => {
 
     const handleAdd = (itemData) => {
         const {id, type} = itemData;
-        let newItem = {id: id || Date.now(), type};
+        let newItem = {id: id || Date.now().toString(), type};
 
         if (type === 'activity') {
             newItem = {
                 ...newItem,
                 title: itemData.title,
-                time: itemData.time instanceof Date ? itemData.time : new Date(itemData.time),
+                time: itemData.time,
                 duration: itemData.duration,
             };
         } else if (type === 'diet') {
             newItem = {
                 ...newItem,
                 description: itemData.description,
-                date: itemData.date instanceof Date ? itemData.date : new Date(itemData.date),
+                date: itemData.time,
                 calories: itemData.calories,
             };
         }
@@ -119,10 +118,6 @@ export const EntryScreen = ({navigation, route}) => {
             } else {
                 addItem(type, newItem);
             }
-            setItemList((prevItems) => {
-                const updatedItems = prevItems.filter((prevItem) => prevItem.id !== id);
-                return [...updatedItems, newItem];
-            });
         } catch (e) {
             console.error('Error adding/updating item: ', e);
         }
