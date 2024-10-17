@@ -13,6 +13,8 @@ import {useNavigation, useTheme} from "@react-navigation/native";
 import CustomizedDatePicker from "../components/CustomizedDatePicker";
 import {ItemContext} from "../context/ItemContext";
 import {addItem, updateItem, deleteItem} from "../firebase/firebaseHelper";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Checkbox from 'expo-checkbox';
 
 /**
  * EntryScreen component that allows users to add or edit entries for activities or diet.
@@ -213,6 +215,22 @@ export const EntryScreen = ({navigation, route}) => {
         // Close DropDownPicker
         setOpen(false);
     };
+    useEffect(() => {
+        if (item) {
+            navigation.setOptions({
+                headerRight: () => (
+                    <AntDesign
+                        name="delete"
+                        size={24}
+                        color="black"
+                        onPress={() => {deleteItem(type, item); navigation.goBack();
+                        }}
+                    />
+                ),
+            });
+        }
+    }, [navigation, item]);
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={{flex: 1}}>
@@ -293,10 +311,11 @@ export const EntryScreen = ({navigation, route}) => {
                                           isPickerVisible={isPickerVisible}
                                           setPickerVisible={setDatePickerVisible}
                                           onOpenDatePicker={onOpenDatePicker}/>
-
+                    <Text>This Item is marked as special. Select the checkbox if would like to approve it</Text>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 220}}>
-                        <Button title="To Save" onPress={onSubmit}/>
+
                         <Button title={"Cancel"} onPress={() => navigation.navigate('Home')}/>
+                        <Button title="To Save" onPress={onSubmit}/>
                     </View>
                 </View>
             </View>

@@ -1,25 +1,27 @@
 import {db} from './firebaseSetup';
-import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc} from 'firebase/firestore';
+import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot} from 'firebase/firestore';
 
 
-export async function getCollection(collectionName) {
-    try {
-        const snapshot = await getDocs(collection(db, collectionName));
+export function subscribeToCollection(collectionName, type, callback) {
+    const q = query(collection(db, collectionName), where("type", "==", type));
+
+    return onSnapshot(q, (querySnapshot) => {
         const items = [];
-        snapshot.forEach((doc) => {
-            items.push({ ...doc.data(), id: doc.id }); // Include the document ID
+        querySnapshot.forEach((doc) => {
+            items.push({...doc.data(), id: doc.id});
         });
-        return items;
-    } catch (e) {
-        console.error("Error getting documents: ", e);
-    }
+        callback(items);
+    }, (error) => {
+        console.error("Error fetching documents: ", error);
+        callback(null, error);
+    });
 }
 
 export async function addItem(collectionName, item) {
     try {
         const docRef = await addDoc(collection(db, collectionName), item);
         // Return the item with its new ID
-        return { ...item, id: docRef.id };
+        return {...item, id: docRef.id};
     } catch (e) {
         console.error("Error adding document: ", e);
     }
@@ -42,6 +44,8 @@ export async function deleteItem(collectionName, item) {
         console.error("Error deleting document: ", e);
     }
 }
+
+
 
 
 

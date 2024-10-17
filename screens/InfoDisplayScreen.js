@@ -6,8 +6,8 @@ import {ThemeContext, ThemeProvider} from '../context/Theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Feather from "@expo/vector-icons/Feather";
-import {getCollection} from "../firebase/firebaseHelper";
-import {useFocusEffect} from '@react-navigation/native';
+import {subscribeToCollection} from "../firebase/firebaseHelper";
+
 
 /**
  * InfoDisplayScreen component displays a list of items filtered by type (activity or diet).
@@ -25,33 +25,21 @@ const InfoDisplayScreen = ({navigation, route}) => {
     const type = route.name === 'Activities' ? 'activity' : 'diet';
     const {theme} = useContext(ThemeContext);
 
-    useFocusEffect(
-        React.useCallback(() => {
-            let isActive = true;
-            const fetchData = async () => {
-                setLoading(true);
-                try {
-                    const items = await getCollection(type);
-                    if (isActive) {
-                        setItemList(items);
-                    }
-                } catch (e) {
-                    if (isActive) {
-                        setError(e);
-                    }
-                } finally {
-                    if (isActive) {
-                        setLoading(false);
-                    }
-                }
-            };
-            fetchData();
-            return () => {
-                isActive = false;
-            };
-        }, [type])
-    );
 
+    useEffect(() => {
+        const unsubscribe = subscribeToCollection(type, type, (items, error) => {
+            if (error) {
+                setError(error);
+                setLoading(false);
+            } else {
+                setItemList(items);
+                setLoading(false);
+            }
+        });
+
+        // Cleanup the listener on component unmount
+        return () => unsubscribe();
+    }, [type]);
 
     useEffect(() => {
         console.log('Updated itemList:', itemList);
