@@ -25,4 +25,5 @@ export const reusableColor = {
   // Additional Colors
   itemBackground: '#4b3f72',   // Same as primary, but can be separated if needed
   borderColor: 'gray',         // Used in borders
+  red: 'red',
 };

@@ -26,7 +26,6 @@ import Checkbox from 'expo-checkbox';
  */
 export const EntryScreen = ({navigation, route}) => {
     const [isChecked, setChecked] = useState(false);
-    const [isSpecial, setIsSpecial] = useState(false);
     const {type, item} = route.params;
     const durationInputRef = useRef(null);
     const caloriesInputRef = useRef(null);
@@ -50,8 +49,18 @@ export const EntryScreen = ({navigation, route}) => {
     ]);
     const [open, setOpen] = useState(false);
     const [isPickerVisible, setDatePickerVisible] = useState(false);
-    // Regex pattern for number validation (positive integers or decimals)
-    // Helper function for validating numbers (both duration and calories)
+
+    const computeIsSpecial = () => {
+        if (type === "activity") {
+            return (
+                (activityValue === 'running' || activityValue === 'weights') &&
+                parseFloat(duration) > 60
+            );
+        } else if (type === "diet") {
+            return parseFloat(calories) > 800;
+        }
+        return false;
+    };
     const validateNumber = (value, fieldName, inputRef) => {
         const numberRegex = /^\d+(\.\d+)?$/;
         if (!numberRegex.test(value)) {
@@ -274,11 +283,12 @@ export const EntryScreen = ({navigation, route}) => {
     };
 
     const buildItemData = () => {
+        const special = computeIsSpecial();
         const commonData = {
             id: item ? item.id : null,
             type,
             date,
-            isSpecial,
+            isSpecial: special,
             isChecked,
         };
         if (type === "activity") {
@@ -417,9 +427,21 @@ export const EntryScreen = ({navigation, route}) => {
                                           isPickerVisible={isPickerVisible}
                                           setPickerVisible={setDatePickerVisible}
                                           onOpenDatePicker={onOpenDatePicker}/>
-                    <Text>This Item is marked as special. Select the checkbox if would like to approve it</Text>
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 220}}>
+                    <View style={myStyle.specialItemContainer}>
+                        <View style={myStyle.textContainer}>
+                            <Text style={myStyle.specialItemText}>
+                                This Item is marked as special. Select the checkbox if you would like to approve it
+                            </Text>
+                        </View>
+                        <View style={myStyle.checkboxContainer}>
+                            <Checkbox
+                                value={isChecked}
+                                onValueChange={setChecked}
+                            />
+                        </View>
+                    </View>
 
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 20}}>
                         <Button title={"Cancel"} onPress={() => navigation.navigate('Home')}/>
                         <Button title="To Save" onPress={onSubmit}/>
                     </View>
