@@ -16,6 +16,7 @@ import {addItem, updateItem, deleteItem} from "../firebase/firebaseHelper";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Checkbox from 'expo-checkbox';
 
+
 /**
  * EntryScreen component that allows users to add or edit entries for activities or diet.
  *
@@ -105,131 +106,51 @@ export const EntryScreen = ({navigation, route}) => {
 
         return true;
     };
-
-    // const handleAdd = async (itemData) => {
-    //     const {id, type} = itemData;
-    //     let newItem = {type};
-    //
-    //     if (type === 'activity') {
-    //         newItem = {
-    //             ...newItem,
-    //             title: itemData.title,
-    //             time: itemData.time,
-    //             duration: itemData.duration,
-    //             isSpecial: itemData.isSpecial,
-    //             isChecked: itemData.isChecked
-    //         };
-    //     } else if (type === 'diet') {
-    //         newItem = {
-    //             ...newItem,
-    //             description: itemData.description,
-    //             date: itemData.date,
-    //             calories: itemData.calories,
-    //             isSpecial: itemData.isSpecial,
-    //             isChecked: itemData.isChecked
-    //         };
-    //     }
-    //
-    //     try {
-    //         if (id) {
-    //             newItem.id = id; // Ensure the ID is included
-    //             await updateItem(type, newItem);
-    //         } else {
-    //             const addedItem = await addItem(type, newItem);
-    //             newItem.id = addedItem.id; // Capture the new ID
-    //         }
-    //     } catch (e) {
-    //         console.error('Error adding/updating item: ', e);
-    //     }
-    // };
-    //
-    // const onSubmit = () => {
-    //     if (!date) {
-    //         Alert.alert(
-    //             "Missing Date",
-    //             "Please select a date.",
-    //             [{text: "OK"}],
-    //             {cancelable: false}
-    //         );
-    //         return;
-    //     }
-    //
-    //     if (type === "activity") {
-    //         if (!activityValue) {
-    //             Alert.alert(
-    //                 "Missing Activity",
-    //                 "Please select an activity.",
-    //                 [
-    //                     {
-    //                         text: "OK",
-    //                         onPress: () => {
-    //                             setOpen(true); // Open the DropDownPicker
-    //                         },
-    //                     },
-    //                 ],
-    //                 {cancelable: false}
-    //             );
-    //             return;
-    //         }
-    //
-    //         // Validate duration
-    //         if (!validateNumber(duration, "duration", durationInputRef)) {
-    //             return;
-    //         }
-    //         handleAdd({
-    //             id: item ? item.id : null,
-    //             type: "activity",
-    //             title: activityValue,
-    //             time: date,
-    //             duration: parseFloat(duration),
-    //             isSpecial: isSpecial,
-    //             isChecked: isChecked
-    //         });
-    //     } else if (type === "diet") {
-    //         if (!description) {
-    //             Alert.alert(
-    //                 "Missing Description",
-    //                 "Please enter a description.",
-    //                 [
-    //                     {
-    //                         text: "OK",
-    //                         onPress: () => {
-    //                             if (descriptionInputRef && descriptionInputRef.current) {
-    //                                 descriptionInputRef.current.focus();
-    //                             }
-    //                         },
-    //                     },
-    //                 ],
-    //                 {cancelable: false}
-    //             );
-    //             return;
-    //         }
-    //
-    //         // Validate calories
-    //         if (!validateNumber(calories, "calories", caloriesInputRef)) {
-    //             return;
-    //         }
-    //
-    //         handleAdd({
-    //             id: item ? item.id : null,
-    //             type: "diet",
-    //             description: description.trim(),
-    //             date: date,
-    //             calories: parseFloat(calories),
-    //             isSpecial: isSpecial,
-    //             isChecked: isChecked
-    //         });
-    //     }
-    //
-    //     navigation.goBack();
-    // };
+    const showDeleteAlert = () => {
+        Alert.alert(
+            "Delete ",
+            "Are you sure you want to delete this item?",
+            [
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        deleteItem(type, item);
+                        navigation.goBack();
+                    },
+                    style: "destructive"
+                }
+            ],
+            {cancelable: false}
+        );
+    };
     const onSubmit = () => {
         if (!validateInputs()) {
             return;
         }
-        const itemData = buildItemData();
-        handleAdd(itemData);
-        navigation.goBack();
+
+        Alert.alert(
+            "Important",
+            "Are you sure you want to save these changes?",
+            [
+                {
+                    text: "No",
+                    style: "cancel"
+                },
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        const itemData = buildItemData();
+                        handleAdd(itemData);
+                        navigation.goBack();
+                    }
+                }
+            ],
+            {cancelable: false}
+        );
     };
 
     const validateInputs = () => {
@@ -339,8 +260,7 @@ export const EntryScreen = ({navigation, route}) => {
                         size={24}
                         color="black"
                         onPress={() => {
-                            deleteItem(type, item);
-                            navigation.goBack();
+                            showDeleteAlert();
                         }}
                     />
                 ),
@@ -429,7 +349,7 @@ export const EntryScreen = ({navigation, route}) => {
                                           setPickerVisible={setDatePickerVisible}
                                           onOpenDatePicker={onOpenDatePicker}/>
 
-                    <View style={{paddingTop: 300}}>
+                    <View style={{paddingTop: 250}}>
                         {isSpecial && (!item || !item.isChecked) && (
                             <View style={myStyle.specialItemContainer}>
                                 <View style={myStyle.textContainer}>
