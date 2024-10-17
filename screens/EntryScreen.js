@@ -25,11 +25,12 @@ import Checkbox from 'expo-checkbox';
  * @returns {JSX.Element} The rendered component.
  */
 export const EntryScreen = ({navigation, route}) => {
+    const [isChecked, setChecked] = useState(false);
+    const [isSpecial, setIsSpecial] = useState(false);
     const {type, item} = route.params;
     const durationInputRef = useRef(null);
     const caloriesInputRef = useRef(null);
     const descriptionInputRef = useRef(null);
-
 
     // Convert date strings back to Date objects
     const initialDate = item ? item.date ? new Date(item.date) : item.time ? new Date(item.time) : null : null;
@@ -95,50 +96,137 @@ export const EntryScreen = ({navigation, route}) => {
         return true;
     };
 
-    const handleAdd = async (itemData) => {
-        const {id, type} = itemData;
-        let newItem = {type};
-
-        if (type === 'activity') {
-            newItem = {
-                ...newItem,
-                title: itemData.title,
-                time: itemData.time,
-                duration: itemData.duration,
-            };
-        } else if (type === 'diet') {
-            newItem = {
-                ...newItem,
-                description: itemData.description,
-                date: itemData.date,
-                calories: itemData.calories,
-            };
-        }
-
-        try {
-            if (id) {
-                newItem.id = id; // Ensure the ID is included
-                await updateItem(type, newItem);
-            } else {
-                const addedItem = await addItem(type, newItem);
-                newItem.id = addedItem.id; // Capture the new ID
-            }
-        } catch (e) {
-            console.error('Error adding/updating item: ', e);
-        }
-    };
-
+    // const handleAdd = async (itemData) => {
+    //     const {id, type} = itemData;
+    //     let newItem = {type};
+    //
+    //     if (type === 'activity') {
+    //         newItem = {
+    //             ...newItem,
+    //             title: itemData.title,
+    //             time: itemData.time,
+    //             duration: itemData.duration,
+    //             isSpecial: itemData.isSpecial,
+    //             isChecked: itemData.isChecked
+    //         };
+    //     } else if (type === 'diet') {
+    //         newItem = {
+    //             ...newItem,
+    //             description: itemData.description,
+    //             date: itemData.date,
+    //             calories: itemData.calories,
+    //             isSpecial: itemData.isSpecial,
+    //             isChecked: itemData.isChecked
+    //         };
+    //     }
+    //
+    //     try {
+    //         if (id) {
+    //             newItem.id = id; // Ensure the ID is included
+    //             await updateItem(type, newItem);
+    //         } else {
+    //             const addedItem = await addItem(type, newItem);
+    //             newItem.id = addedItem.id; // Capture the new ID
+    //         }
+    //     } catch (e) {
+    //         console.error('Error adding/updating item: ', e);
+    //     }
+    // };
+    //
+    // const onSubmit = () => {
+    //     if (!date) {
+    //         Alert.alert(
+    //             "Missing Date",
+    //             "Please select a date.",
+    //             [{text: "OK"}],
+    //             {cancelable: false}
+    //         );
+    //         return;
+    //     }
+    //
+    //     if (type === "activity") {
+    //         if (!activityValue) {
+    //             Alert.alert(
+    //                 "Missing Activity",
+    //                 "Please select an activity.",
+    //                 [
+    //                     {
+    //                         text: "OK",
+    //                         onPress: () => {
+    //                             setOpen(true); // Open the DropDownPicker
+    //                         },
+    //                     },
+    //                 ],
+    //                 {cancelable: false}
+    //             );
+    //             return;
+    //         }
+    //
+    //         // Validate duration
+    //         if (!validateNumber(duration, "duration", durationInputRef)) {
+    //             return;
+    //         }
+    //         handleAdd({
+    //             id: item ? item.id : null,
+    //             type: "activity",
+    //             title: activityValue,
+    //             time: date,
+    //             duration: parseFloat(duration),
+    //             isSpecial: isSpecial,
+    //             isChecked: isChecked
+    //         });
+    //     } else if (type === "diet") {
+    //         if (!description) {
+    //             Alert.alert(
+    //                 "Missing Description",
+    //                 "Please enter a description.",
+    //                 [
+    //                     {
+    //                         text: "OK",
+    //                         onPress: () => {
+    //                             if (descriptionInputRef && descriptionInputRef.current) {
+    //                                 descriptionInputRef.current.focus();
+    //                             }
+    //                         },
+    //                     },
+    //                 ],
+    //                 {cancelable: false}
+    //             );
+    //             return;
+    //         }
+    //
+    //         // Validate calories
+    //         if (!validateNumber(calories, "calories", caloriesInputRef)) {
+    //             return;
+    //         }
+    //
+    //         handleAdd({
+    //             id: item ? item.id : null,
+    //             type: "diet",
+    //             description: description.trim(),
+    //             date: date,
+    //             calories: parseFloat(calories),
+    //             isSpecial: isSpecial,
+    //             isChecked: isChecked
+    //         });
+    //     }
+    //
+    //     navigation.goBack();
+    // };
     const onSubmit = () => {
-        if (!date) {
-            Alert.alert(
-                "Missing Date",
-                "Please select a date.",
-                [{text: "OK"}],
-                {cancelable: false}
-            );
+        if (!validateInputs()) {
             return;
         }
+        const itemData = buildItemData();
+        handleAdd(itemData);
+        navigation.goBack();
+    };
 
+    const validateInputs = () => {
+        if (!date) {
+            Alert.alert("Missing Date", "Please select a date.", [{text: "OK"}], {cancelable: false});
+            return false;
+        }
         if (type === "activity") {
             if (!activityValue) {
                 Alert.alert(
@@ -154,20 +242,11 @@ export const EntryScreen = ({navigation, route}) => {
                     ],
                     {cancelable: false}
                 );
-                return;
+                return false;
             }
-
-            // Validate duration
             if (!validateNumber(duration, "duration", durationInputRef)) {
-                return;
+                return false;
             }
-            handleAdd({
-                id: item ? item.id : null,
-                type: "activity",
-                title: activityValue,
-                time: date,
-                duration: parseFloat(duration),
-            });
         } else if (type === "diet") {
             if (!description) {
                 Alert.alert(
@@ -185,24 +264,49 @@ export const EntryScreen = ({navigation, route}) => {
                     ],
                     {cancelable: false}
                 );
-                return;
+                return false;
             }
-
-            // Validate calories
             if (!validateNumber(calories, "calories", caloriesInputRef)) {
-                return;
+                return false;
             }
-
-            handleAdd({
-                id: item ? item.id : null,
-                type: "diet",
-                description: description.trim(),
-                date: date,
-                calories: parseFloat(calories),
-            });
         }
+        return true;
+    };
 
-        navigation.goBack();
+    const buildItemData = () => {
+        const commonData = {
+            id: item ? item.id : null,
+            type,
+            date,
+            isSpecial,
+            isChecked,
+        };
+        if (type === "activity") {
+            return {
+                ...commonData,
+                title: activityValue,
+                time: date,
+                duration: parseFloat(duration),
+            };
+        } else if (type === "diet") {
+            return {
+                ...commonData,
+                description: description.trim(),
+                calories: parseFloat(calories),
+            };
+        }
+    };
+
+    const handleAdd = async (itemData) => {
+        try {
+            if (itemData.id) {
+                await updateItem(itemData.type, itemData);
+            } else {
+                await addItem(itemData.type, itemData);
+            }
+        } catch (e) {
+            console.error('Error adding/updating item: ', e);
+        }
     };
 
     // Function to handle opening the date picker
@@ -223,7 +327,9 @@ export const EntryScreen = ({navigation, route}) => {
                         name="delete"
                         size={24}
                         color="black"
-                        onPress={() => {deleteItem(type, item); navigation.goBack();
+                        onPress={() => {
+                            deleteItem(type, item);
+                            navigation.goBack();
                         }}
                     />
                 ),
