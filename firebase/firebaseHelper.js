@@ -1,6 +1,7 @@
 import {db} from './firebaseSetup';
 import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc} from 'firebase/firestore';
 
+
 export async function getCollection(collectionName) {
     try {
         const snapshot = await getDocs(collection(db, collectionName));

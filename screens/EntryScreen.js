@@ -12,6 +12,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import {useNavigation, useTheme} from "@react-navigation/native";
 import CustomizedDatePicker from "../components/CustomizedDatePicker";
 import {ItemContext} from "../context/ItemContext";
+import {addItem, updateItem, deleteItem} from "../firebase/firebaseHelper";
 
 /**
  * EntryScreen component that allows users to add or edit entries for activities or diet.
@@ -112,14 +113,19 @@ export const EntryScreen = ({navigation, route}) => {
                 calories: itemData.calories,
             };
         }
-
-        setItemList((prevItemList) => {
+        try {
             if (id) {
-                return prevItemList.map((item) => (item.id === id ? newItem : item));
+                updateItem(type, newItem);
             } else {
-                return [...prevItemList, newItem];
+                addItem(type, newItem);
             }
-        });
+            setItemList((prevItems) => {
+                const updatedItems = prevItems.filter((prevItem) => prevItem.id !== id);
+                return [...updatedItems, newItem];
+            });
+        } catch (e) {
+            console.error('Error adding/updating item: ', e);
+        }
     };
 
     const onSubmit = () => {
