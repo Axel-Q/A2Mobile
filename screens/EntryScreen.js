@@ -93,9 +93,9 @@ export const EntryScreen = ({navigation, route}) => {
         return true;
     };
 
-    const handleAdd = (itemData) => {
+    const handleAdd = async (itemData) => {
         const {id, type} = itemData;
-        let newItem = {id: id || Date.now().toString(), type};
+        let newItem = {type};
 
         if (type === 'activity') {
             newItem = {
@@ -108,15 +108,18 @@ export const EntryScreen = ({navigation, route}) => {
             newItem = {
                 ...newItem,
                 description: itemData.description,
-                date: itemData.time,
+                date: itemData.date,
                 calories: itemData.calories,
             };
         }
+
         try {
             if (id) {
-                updateItem(type, newItem);
+                newItem.id = id; // Ensure the ID is included
+                await updateItem(type, newItem);
             } else {
-                addItem(type, newItem);
+                const addedItem = await addItem(type, newItem);
+                newItem.id = addedItem.id; // Capture the new ID
             }
         } catch (e) {
             console.error('Error adding/updating item: ', e);

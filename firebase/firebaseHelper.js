@@ -5,9 +5,9 @@ import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc} from 'firebase/f
 export async function getCollection(collectionName) {
     try {
         const snapshot = await getDocs(collection(db, collectionName));
-        const items = []
+        const items = [];
         snapshot.forEach((doc) => {
-            items.push(doc.data());
+            items.push({ ...doc.data(), id: doc.id }); // Include the document ID
         });
         return items;
     } catch (e) {
@@ -17,7 +17,9 @@ export async function getCollection(collectionName) {
 
 export async function addItem(collectionName, item) {
     try {
-        await addDoc(collection(db, collectionName), item);
+        const docRef = await addDoc(collection(db, collectionName), item);
+        // Return the item with its new ID
+        return { ...item, id: docRef.id };
     } catch (e) {
         console.error("Error adding document: ", e);
     }
