@@ -6,12 +6,26 @@
  */
 
 import {myStyle} from "../helperFile/myStyle";
-import {View, Text, TextInput, Button, Alert, FlatList, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    Alert,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Pressable,
+    TouchableOpacity
+} from "react-native";
 import {useContext, useEffect, useState, useRef} from "react";
 import DropDownPicker from "react-native-dropdown-picker";
-import {useNavigation, useTheme} from "@react-navigation/native";
 import CustomizedDatePicker from "../components/CustomizedDatePicker";
 import {ItemContext} from "../context/ItemContext";
+import {addItem, updateItem, deleteItem} from "../firebase/firebaseHelper";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Checkbox from 'expo-checkbox';
+import CustomButton from "../components/CustomButton";
+
 
 /**
  * EntryScreen component that allows users to add or edit entries for activities or diet.
@@ -22,193 +36,170 @@ import {ItemContext} from "../context/ItemContext";
  * @returns {JSX.Element} The rendered component.
  */
 export const EntryScreen = ({navigation, route}) => {
-    const {itemList, setItemList} = useContext(ItemContext);
     const {type, item} = route.params;
+    const [isChecked, setChecked] = useState(item ? item.isChecked : false);
+    const [isSpecial, setSpecial] = useState(item ? item.isSpecial : false);
     const durationInputRef = useRef(null);
     const caloriesInputRef = useRef(null);
     const descriptionInputRef = useRef(null);
 
-
     // Convert date strings back to Date objects
-    const initialDate = item ? item.date ? new Date(item.date) : item.time ? new Date(item.time) : null : null;
+    const initialDate = item && (item.date || item.time) ? new Date(item.date || item.time) : null;
     const [date, setDate] = useState(initialDate);
     const [duration, setDuration] = useState(item && item.duration ? item.duration.toString() : '');
     const [activityValue, setActivityValue] = useState(item ? item.title : null);
     const [description, setDescription] = useState(item ? item.description : '');
     const [calories, setCalories] = useState(item && item.calories ? item.calories.toString() : '');
-    const [items, setItems] = useState([
-        {label: 'Running', value: 'running'},
-        {label: 'Walking', value: 'walking'},
-        {label: 'Swimming', value: 'swimming'},
-        {label: 'Weights', value: 'weights'},
-        {label: 'Yoga', value: 'yoga'},
-        {label: 'Cycling', value: 'cycling'},
-        {label: 'Hiking', value: 'hiking'},
-    ]);
+    const [items, setItems] = useState([{label: 'Running', value: 'running'}, {
+        label: 'Walking',
+        value: 'walking'
+    }, {label: 'Swimming', value: 'swimming'}, {label: 'Weights', value: 'weights'}, {
+        label: 'Yoga',
+        value: 'yoga'
+    }, {label: 'Cycling', value: 'cycling'}, {label: 'Hiking', value: 'hiking'},]);
     const [open, setOpen] = useState(false);
     const [isPickerVisible, setDatePickerVisible] = useState(false);
-    // Regex pattern for number validation (positive integers or decimals)
-    // Helper function for validating numbers (both duration and calories)
+
+    const computeIsSpecial = () => {
+        if (type === "activity") {
+            return ((activityValue === 'running' || activityValue === 'weights') && parseFloat(duration) > 60);
+        } else if (type === "diet") {
+            return parseFloat(calories) > 800;
+        }
+        return false;
+    };
     const validateNumber = (value, fieldName, inputRef) => {
         const numberRegex = /^\d+(\.\d+)?$/;
         if (!numberRegex.test(value)) {
-            Alert.alert(
-                'Invalid Input',
-                `Please enter a valid ${fieldName} (positive number).`,
-                [
-                    {
-                        text: 'OK',
-                        onPress: () => {
-                            if (inputRef && inputRef.current) {
-                                inputRef.current.focus();
-                            }
-                        },
-                    },
-                ],
-                {cancelable: false}
-            );
+            Alert.alert('Invalid Input', `Please enter a valid ${fieldName} (positive number).`, [{
+                text: 'OK', onPress: () => {
+                    if (inputRef && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                },
+            },], {cancelable: false});
             return false;
         }
 
         const parsedValue = parseFloat(value);
         if (parsedValue <= 0) {
-            Alert.alert(
-                'Invalid Input',
-                `Please enter a valid ${fieldName} (positive number greater than 0).`,
-                [
-                    {
-                        text: 'OK',
-                        onPress: () => {
-                            if (inputRef && inputRef.current) {
-                                inputRef.current.focus();
-                            }
-                        },
-                    },
-                ],
-                {cancelable: false}
-            );
+            Alert.alert('Invalid Input', `Please enter a valid ${fieldName} (positive number greater than 0).`, [{
+                text: 'OK', onPress: () => {
+                    if (inputRef && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                },
+            },], {cancelable: false});
             return false;
         }
 
         return true;
     };
-
-    const handleAdd = (itemData) => {
-        const {id, type} = itemData;
-        let newItem = {id: id || Date.now(), type};
-
-        if (type === 'activity') {
-            newItem = {
-                ...newItem,
-                title: itemData.title,
-                time: itemData.time instanceof Date ? itemData.time : new Date(itemData.time),
-                duration: itemData.duration,
-            };
-        } else if (type === 'diet') {
-            newItem = {
-                ...newItem,
-                description: itemData.description,
-                date: itemData.date instanceof Date ? itemData.date : new Date(itemData.date),
-                calories: itemData.calories,
-            };
-        }
-
-        setItemList((prevItemList) => {
-            if (id) {
-                return prevItemList.map((item) => (item.id === id ? newItem : item));
-            } else {
-                return [...prevItemList, newItem];
-            }
-        });
+    const showDeleteAlert = () => {
+        Alert.alert("Delete ", "Are you sure you want to delete this item?", [{
+            text: "No", style: "cancel"
+        }, {
+            text: "Yes", onPress: () => {
+                deleteItem(type, item);
+                navigation.goBack();
+            }, style: "destructive"
+        }], {cancelable: false});
     };
-
     const onSubmit = () => {
-        if (!date) {
-            Alert.alert(
-                "Missing Date",
-                "Please select a date.",
-                [{text: "OK"}],
-                {cancelable: false}
-            );
+        if (!validateInputs()) {
             return;
         }
 
+        Alert.alert("Important", "Are you sure you want to save these changes?", [{
+            text: "No", style: "cancel"
+        }, {
+            text: "Yes", onPress: () => {
+                const itemData = buildItemData();
+                handleAdd(itemData);
+                navigation.goBack();
+            }
+        }], {cancelable: false});
+    };
+
+    const validateInputs = () => {
+        if (!date) {
+            Alert.alert("Missing Date", "Please select a date.", [{text: "OK"}], {cancelable: false});
+            return false;
+        }
         if (type === "activity") {
             if (!activityValue) {
-                Alert.alert(
-                    "Missing Activity",
-                    "Please select an activity.",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                setOpen(true); // Open the DropDownPicker
-                            },
-                        },
-                    ],
-                    {cancelable: false}
-                );
-                return;
+                Alert.alert("Missing Activity", "Please select an activity.", [{
+                    text: "OK", onPress: () => {
+                        setOpen(true); // Open the DropDownPicker
+                    },
+                },], {cancelable: false});
+                return false;
             }
-
-            // Validate duration
             if (!validateNumber(duration, "duration", durationInputRef)) {
-                return;
+                return false;
             }
-            handleAdd({
-                id: item ? item.id : null,
-                type: "activity",
-                title: activityValue,
-                time: date,
-                duration: parseFloat(duration),
-            });
         } else if (type === "diet") {
             if (!description) {
-                Alert.alert(
-                    "Missing Description",
-                    "Please enter a description.",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                if (descriptionInputRef && descriptionInputRef.current) {
-                                    descriptionInputRef.current.focus();
-                                }
-                            },
-                        },
-                    ],
-                    {cancelable: false}
-                );
-                return;
+                Alert.alert("Missing Description", "Please enter a description.", [{
+                    text: "OK", onPress: () => {
+                        if (descriptionInputRef && descriptionInputRef.current) {
+                            descriptionInputRef.current.focus();
+                        }
+                    },
+                },], {cancelable: false});
+                return false;
             }
-
-            // Validate calories
             if (!validateNumber(calories, "calories", caloriesInputRef)) {
-                return;
+                return false;
             }
+        }
+        return true;
+    };
 
-            handleAdd({
-                id: item ? item.id : null,
-                type: "diet",
-                description: description.trim(),
-                date: date,
-                calories: parseFloat(calories),
+    const buildItemData = () => {
+        const special = computeIsSpecial();
+        const commonData = {
+            id: item ? item.id : null, type, date, isSpecial: special, isChecked,
+        };
+        if (type === "activity") {
+            return {
+                ...commonData, title: activityValue, time: date, duration: parseFloat(duration),
+            };
+        } else if (type === "diet") {
+            return {
+                ...commonData, description: description.trim(), calories: parseFloat(calories),
+            };
+        }
+    };
+
+    const handleAdd = async (itemData) => {
+        try {
+            if (itemData.id) {
+                await updateItem(itemData.type, itemData);
+            } else {
+                await addItem(itemData.type, itemData);
+            }
+        } catch (e) {
+            console.error('Error adding/updating item: ', e);
+        }
+    };
+
+    useEffect(() => {
+        if (item) {
+            navigation.setOptions({
+                headerRight: () => (
+                    <TouchableOpacity onPress={() => showDeleteAlert()}>
+                        <AntDesign
+                            name="delete"
+                            size={24}
+                            color="black"
+                        />
+                    </TouchableOpacity>
+                ),
             });
         }
+    }, [navigation, item]);
 
-        navigation.goBack();
-    };
-
-    // Function to handle opening the date picker
-    const onOpenDatePicker = () => {
-        setDatePickerVisible(true);
-        // Blur any focused TextInput
-        if (durationInputRef.current) durationInputRef.current.blur();
-        if (descriptionInputRef.current) descriptionInputRef.current.blur();
-        if (caloriesInputRef.current) caloriesInputRef.current.blur();
-        // Close DropDownPicker
-        setOpen(false);
-    };
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={{flex: 1}}>
@@ -288,14 +279,40 @@ export const EntryScreen = ({navigation, route}) => {
                     <CustomizedDatePicker selectedDate={date} onDateSelect={setDate}
                                           isPickerVisible={isPickerVisible}
                                           setPickerVisible={setDatePickerVisible}
-                                          onOpenDatePicker={onOpenDatePicker}/>
+                                          />
 
-                    <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingTop: 220}}>
-                        <Button title="To Save" onPress={onSubmit}/>
-                        <Button title={"Cancel"} onPress={() => navigation.navigate('Home')}/>
+                    <View style={{paddingTop: 150}}>
+                        {isSpecial && (!item || !item.isChecked) && (<View style={myStyle.specialItemContainer}>
+                            <View style={myStyle.textContainer}>
+                                <Text style={myStyle.specialItemText}>
+                                    This Item is marked as special. Select the checkbox if you would like to approve
+                                    it
+                                </Text>
+                            </View>
+                            <View style={myStyle.checkboxContainer}>
+                                <Checkbox
+                                    value={isChecked}
+                                    onValueChange={setChecked}
+                                />
+                            </View>
+                        </View>)}
+
+                        <View style={{flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
+                            <CustomButton
+                                onPress={() => navigation.navigate('Home')}
+                                title="Cancel"
+                                backgroundColor="red"
+                                pressedColor="#cc0000"
+                            />
+                            <CustomButton
+                                onPress={onSubmit}
+                                title="Save"
+                                backgroundColor="blue"
+                                pressedColor="#0000cc"
+                            />
+                        </View>
                     </View>
                 </View>
             </View>
-        </TouchableWithoutFeedback>
-    )
+        </TouchableWithoutFeedback>)
 }
