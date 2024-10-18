@@ -34,30 +34,25 @@ export const EntryScreen = ({navigation, route}) => {
     const descriptionInputRef = useRef(null);
 
     // Convert date strings back to Date objects
-    const initialDate = item ? item.date ? new Date(item.date) : item.time ? new Date(item.time) : null : null;
+    const initialDate = item && (item.date || item.time) ? new Date(item.date || item.time) : new Date();
     const [date, setDate] = useState(initialDate);
     const [duration, setDuration] = useState(item && item.duration ? item.duration.toString() : '');
     const [activityValue, setActivityValue] = useState(item ? item.title : null);
     const [description, setDescription] = useState(item ? item.description : '');
     const [calories, setCalories] = useState(item && item.calories ? item.calories.toString() : '');
-    const [items, setItems] = useState([
-        {label: 'Running', value: 'running'},
-        {label: 'Walking', value: 'walking'},
-        {label: 'Swimming', value: 'swimming'},
-        {label: 'Weights', value: 'weights'},
-        {label: 'Yoga', value: 'yoga'},
-        {label: 'Cycling', value: 'cycling'},
-        {label: 'Hiking', value: 'hiking'},
-    ]);
+    const [items, setItems] = useState([{label: 'Running', value: 'running'}, {
+        label: 'Walking',
+        value: 'walking'
+    }, {label: 'Swimming', value: 'swimming'}, {label: 'Weights', value: 'weights'}, {
+        label: 'Yoga',
+        value: 'yoga'
+    }, {label: 'Cycling', value: 'cycling'}, {label: 'Hiking', value: 'hiking'},]);
     const [open, setOpen] = useState(false);
     const [isPickerVisible, setDatePickerVisible] = useState(false);
 
     const computeIsSpecial = () => {
         if (type === "activity") {
-            return (
-                (activityValue === 'running' || activityValue === 'weights') &&
-                parseFloat(duration) > 60
-            );
+            return ((activityValue === 'running' || activityValue === 'weights') && parseFloat(duration) > 60);
         } else if (type === "diet") {
             return parseFloat(calories) > 800;
         }
@@ -66,91 +61,54 @@ export const EntryScreen = ({navigation, route}) => {
     const validateNumber = (value, fieldName, inputRef) => {
         const numberRegex = /^\d+(\.\d+)?$/;
         if (!numberRegex.test(value)) {
-            Alert.alert(
-                'Invalid Input',
-                `Please enter a valid ${fieldName} (positive number).`,
-                [
-                    {
-                        text: 'OK',
-                        onPress: () => {
-                            if (inputRef && inputRef.current) {
-                                inputRef.current.focus();
-                            }
-                        },
-                    },
-                ],
-                {cancelable: false}
-            );
+            Alert.alert('Invalid Input', `Please enter a valid ${fieldName} (positive number).`, [{
+                text: 'OK', onPress: () => {
+                    if (inputRef && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                },
+            },], {cancelable: false});
             return false;
         }
 
         const parsedValue = parseFloat(value);
         if (parsedValue <= 0) {
-            Alert.alert(
-                'Invalid Input',
-                `Please enter a valid ${fieldName} (positive number greater than 0).`,
-                [
-                    {
-                        text: 'OK',
-                        onPress: () => {
-                            if (inputRef && inputRef.current) {
-                                inputRef.current.focus();
-                            }
-                        },
-                    },
-                ],
-                {cancelable: false}
-            );
+            Alert.alert('Invalid Input', `Please enter a valid ${fieldName} (positive number greater than 0).`, [{
+                text: 'OK', onPress: () => {
+                    if (inputRef && inputRef.current) {
+                        inputRef.current.focus();
+                    }
+                },
+            },], {cancelable: false});
             return false;
         }
 
         return true;
     };
     const showDeleteAlert = () => {
-        Alert.alert(
-            "Delete ",
-            "Are you sure you want to delete this item?",
-            [
-                {
-                    text: "No",
-                    style: "cancel"
-                },
-                {
-                    text: "Yes",
-                    onPress: () => {
-                        deleteItem(type, item);
-                        navigation.goBack();
-                    },
-                    style: "destructive"
-                }
-            ],
-            {cancelable: false}
-        );
+        Alert.alert("Delete ", "Are you sure you want to delete this item?", [{
+            text: "No", style: "cancel"
+        }, {
+            text: "Yes", onPress: () => {
+                deleteItem(type, item);
+                navigation.goBack();
+            }, style: "destructive"
+        }], {cancelable: false});
     };
     const onSubmit = () => {
         if (!validateInputs()) {
             return;
         }
 
-        Alert.alert(
-            "Important",
-            "Are you sure you want to save these changes?",
-            [
-                {
-                    text: "No",
-                    style: "cancel"
-                },
-                {
-                    text: "Yes",
-                    onPress: () => {
-                        const itemData = buildItemData();
-                        handleAdd(itemData);
-                        navigation.goBack();
-                    }
-                }
-            ],
-            {cancelable: false}
-        );
+        Alert.alert("Important", "Are you sure you want to save these changes?", [{
+            text: "No", style: "cancel"
+        }, {
+            text: "Yes", onPress: () => {
+                const itemData = buildItemData();
+                handleAdd(itemData);
+                navigation.goBack();
+            }
+        }], {cancelable: false});
     };
 
     const validateInputs = () => {
@@ -160,19 +118,11 @@ export const EntryScreen = ({navigation, route}) => {
         }
         if (type === "activity") {
             if (!activityValue) {
-                Alert.alert(
-                    "Missing Activity",
-                    "Please select an activity.",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                setOpen(true); // Open the DropDownPicker
-                            },
-                        },
-                    ],
-                    {cancelable: false}
-                );
+                Alert.alert("Missing Activity", "Please select an activity.", [{
+                    text: "OK", onPress: () => {
+                        setOpen(true); // Open the DropDownPicker
+                    },
+                },], {cancelable: false});
                 return false;
             }
             if (!validateNumber(duration, "duration", durationInputRef)) {
@@ -180,21 +130,13 @@ export const EntryScreen = ({navigation, route}) => {
             }
         } else if (type === "diet") {
             if (!description) {
-                Alert.alert(
-                    "Missing Description",
-                    "Please enter a description.",
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                if (descriptionInputRef && descriptionInputRef.current) {
-                                    descriptionInputRef.current.focus();
-                                }
-                            },
-                        },
-                    ],
-                    {cancelable: false}
-                );
+                Alert.alert("Missing Description", "Please enter a description.", [{
+                    text: "OK", onPress: () => {
+                        if (descriptionInputRef && descriptionInputRef.current) {
+                            descriptionInputRef.current.focus();
+                        }
+                    },
+                },], {cancelable: false});
                 return false;
             }
             if (!validateNumber(calories, "calories", caloriesInputRef)) {
@@ -207,24 +149,15 @@ export const EntryScreen = ({navigation, route}) => {
     const buildItemData = () => {
         const special = computeIsSpecial();
         const commonData = {
-            id: item ? item.id : null,
-            type,
-            date,
-            isSpecial: special,
-            isChecked,
+            id: item ? item.id : null, type, date, isSpecial: special, isChecked,
         };
         if (type === "activity") {
             return {
-                ...commonData,
-                title: activityValue,
-                time: date,
-                duration: parseFloat(duration),
+                ...commonData, title: activityValue, time: date, duration: parseFloat(duration),
             };
         } else if (type === "diet") {
             return {
-                ...commonData,
-                description: description.trim(),
-                calories: parseFloat(calories),
+                ...commonData, description: description.trim(), calories: parseFloat(calories),
             };
         }
     };
@@ -254,22 +187,19 @@ export const EntryScreen = ({navigation, route}) => {
     useEffect(() => {
         if (item) {
             navigation.setOptions({
-                headerRight: () => (
-                    <AntDesign
+                headerRight: () => (<AntDesign
                         name="delete"
                         size={24}
                         color="black"
                         onPress={() => {
                             showDeleteAlert();
                         }}
-                    />
-                ),
+                    />),
             });
         }
     }, [navigation, item]);
 
-    return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    return (<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={{flex: 1}}>
                 <View style={{padding: 16}}>
                     {type === 'activity' ? (<>
@@ -350,21 +280,20 @@ export const EntryScreen = ({navigation, route}) => {
                                           onOpenDatePicker={onOpenDatePicker}/>
 
                     <View style={{paddingTop: 250}}>
-                        {isSpecial && (!item || !item.isChecked) && (
-                            <View style={myStyle.specialItemContainer}>
-                                <View style={myStyle.textContainer}>
-                                    <Text style={myStyle.specialItemText}>
-                                        This Item is marked as special. Select the checkbox if you would like to approve
-                                        it
-                                    </Text>
-                                </View>
-                                <View style={myStyle.checkboxContainer}>
-                                    <Checkbox
-                                        value={isChecked}
-                                        onValueChange={setChecked}
-                                    />
-                                </View>
-                            </View>)}
+                        {isSpecial && (!item || !item.isChecked) && (<View style={myStyle.specialItemContainer}>
+                            <View style={myStyle.textContainer}>
+                                <Text style={myStyle.specialItemText}>
+                                    This Item is marked as special. Select the checkbox if you would like to approve
+                                    it
+                                </Text>
+                            </View>
+                            <View style={myStyle.checkboxContainer}>
+                                <Checkbox
+                                    value={isChecked}
+                                    onValueChange={setChecked}
+                                />
+                            </View>
+                        </View>)}
 
                         <View style={{flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
                             <View style={{marginRight: 10}}>
@@ -377,6 +306,5 @@ export const EntryScreen = ({navigation, route}) => {
                     </View>
                 </View>
             </View>
-        </TouchableWithoutFeedback>
-    )
+        </TouchableWithoutFeedback>)
 }
