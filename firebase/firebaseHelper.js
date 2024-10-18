@@ -1,3 +1,11 @@
+/**
+ * This file contains the functions that interact with the Firebase Firestore database.
+ * These functions are used to add, update, delete, and retrieve items from the database.
+ * The functions use the Firebase SDK to interact with the Firestore database.
+ * The functions are used in the application to manage the state of items (activities or diet entries).
+ *
+ * */
+
 import {db} from './firebaseSetup';
 import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, where, onSnapshot} from 'firebase/firestore';
 

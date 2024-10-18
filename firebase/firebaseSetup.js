@@ -1,3 +1,8 @@
+/**
+ * This file is used to initialize the firebase app and export the firestore database.
+ * The firebaseConfig object contains the configuration settings for the firebase app.
+ */
+
 import {initializeApp} from 'firebase/app';
 import {getFirestore} from 'firebase/firestore';
 
