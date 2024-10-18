@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {View, Text, TouchableOpacity, Button, Platform} from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, {DateTimePickerAndroid} from '@react-native-community/datetimepicker';
 
 /**
  * CustomizedDatePicker component that provides a date picker input field.
@@ -16,7 +16,6 @@ export default function CustomizedDatePicker({
                                                  onDateSelect,
                                                  isPickerVisible,
                                                  setPickerVisible,
-                                                 onOpenDatePicker,
                                              }) {
     const [tempDate, setTempDate] = useState(new Date());
 
@@ -34,11 +33,24 @@ export default function CustomizedDatePicker({
         }
     };
 
+
     const onDonePress = () => {
         onDateSelect(tempDate); // Finalize date selection
         setPickerVisible(false);
     };
 
+    const onOpenDatePicker = () => {
+        if (Platform.OS === 'android') {
+            DateTimePickerAndroid.open({
+                value: tempDate,
+                onChange: handleDateChange,
+                mode: 'date',
+                display: 'default',
+            });
+        } else {
+            setPickerVisible(true);
+        }
+    };
 
     return (
         <View>

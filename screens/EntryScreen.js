@@ -184,16 +184,6 @@ export const EntryScreen = ({navigation, route}) => {
         }
     };
 
-    // Function to handle opening the date picker
-    const onOpenDatePicker = () => {
-        setDatePickerVisible(true);
-        // Blur any focused TextInput
-        if (durationInputRef.current) durationInputRef.current.blur();
-        if (descriptionInputRef.current) descriptionInputRef.current.blur();
-        if (caloriesInputRef.current) caloriesInputRef.current.blur();
-        // Close DropDownPicker
-        setOpen(false);
-    };
     useEffect(() => {
         if (item) {
             navigation.setOptions({
@@ -289,9 +279,9 @@ export const EntryScreen = ({navigation, route}) => {
                     <CustomizedDatePicker selectedDate={date} onDateSelect={setDate}
                                           isPickerVisible={isPickerVisible}
                                           setPickerVisible={setDatePickerVisible}
-                                          onOpenDatePicker={onOpenDatePicker}/>
+                                          />
 
-                    <View style={{paddingTop: 250}}>
+                    <View style={{paddingTop: 150}}>
                         {isSpecial && (!item || !item.isChecked) && (<View style={myStyle.specialItemContainer}>
                             <View style={myStyle.textContainer}>
                                 <Text style={myStyle.specialItemText}>
