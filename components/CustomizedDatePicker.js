@@ -18,12 +18,13 @@ export default function CustomizedDatePicker({
                                                  setPickerVisible,
                                                  onOpenDatePicker,
                                              }) {
-    const [tempDate, setTempDate] = useState(selectedDate || new Date());
+    const [tempDate, setTempDate] = useState(new Date());
 
     const handleDateChange = (event, newDate) => {
         if (Platform.OS === 'android') {
             if (event.type === 'set') {
                 const pickedDate = newDate || tempDate;
+                setTempDate(pickedDate);
                 onDateSelect(pickedDate);
             }
             setPickerVisible(false); // Close the picker
@@ -58,7 +59,7 @@ export default function CustomizedDatePicker({
             </TouchableOpacity>
             {isPickerVisible && (
                 <DateTimePicker
-                    value={selectedDate || new Date()}
+                    value={tempDate}
                     mode="date"
                     display={Platform.OS === 'ios' ? 'inline' : 'default'}
                     onChange={handleDateChange}

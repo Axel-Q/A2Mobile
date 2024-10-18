@@ -6,15 +6,25 @@
  */
 
 import {myStyle} from "../helperFile/myStyle";
-import {View, Text, TextInput, Button, Alert, FlatList, TouchableWithoutFeedback, Keyboard} from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    Alert,
+    TouchableWithoutFeedback,
+    Keyboard,
+    Pressable,
+    TouchableOpacity
+} from "react-native";
 import {useContext, useEffect, useState, useRef} from "react";
 import DropDownPicker from "react-native-dropdown-picker";
-import {useNavigation, useTheme} from "@react-navigation/native";
 import CustomizedDatePicker from "../components/CustomizedDatePicker";
 import {ItemContext} from "../context/ItemContext";
 import {addItem, updateItem, deleteItem} from "../firebase/firebaseHelper";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import Checkbox from 'expo-checkbox';
+import CustomButton from "../components/CustomButton";
 
 
 /**
@@ -34,7 +44,7 @@ export const EntryScreen = ({navigation, route}) => {
     const descriptionInputRef = useRef(null);
 
     // Convert date strings back to Date objects
-    const initialDate = item && (item.date || item.time) ? new Date(item.date || item.time) : new Date();
+    const initialDate = item && (item.date || item.time) ? new Date(item.date || item.time) : null;
     const [date, setDate] = useState(initialDate);
     const [duration, setDuration] = useState(item && item.duration ? item.duration.toString() : '');
     const [activityValue, setActivityValue] = useState(item ? item.title : null);
@@ -187,19 +197,21 @@ export const EntryScreen = ({navigation, route}) => {
     useEffect(() => {
         if (item) {
             navigation.setOptions({
-                headerRight: () => (<AntDesign
-                        name="delete"
-                        size={24}
-                        color="black"
-                        onPress={() => {
-                            showDeleteAlert();
-                        }}
-                    />),
+                headerRight: () => (
+                    <TouchableOpacity onPress={() => showDeleteAlert()}>
+                        <AntDesign
+                            name="delete"
+                            size={24}
+                            color="black"
+                        />
+                    </TouchableOpacity>
+                ),
             });
         }
     }, [navigation, item]);
 
-    return (<TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    return (
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={{flex: 1}}>
                 <View style={{padding: 16}}>
                     {type === 'activity' ? (<>
@@ -296,12 +308,18 @@ export const EntryScreen = ({navigation, route}) => {
                         </View>)}
 
                         <View style={{flexDirection: 'row', justifyContent: 'center', paddingTop: 20}}>
-                            <View style={{marginRight: 10}}>
-                                <Button title="Cancel" onPress={() => navigation.navigate('Home')} color='red'/>
-                            </View>
-                            <View style={{marginLeft: 10}}>
-                                <Button title="Save" onPress={onSubmit}/>
-                            </View>
+                            <CustomButton
+                                onPress={() => navigation.navigate('Home')}
+                                title="Cancel"
+                                backgroundColor="red"
+                                pressedColor="#cc0000"
+                            />
+                            <CustomButton
+                                onPress={onSubmit}
+                                title="Save"
+                                backgroundColor="blue"
+                                pressedColor="#0000cc"
+                            />
                         </View>
                     </View>
                 </View>
