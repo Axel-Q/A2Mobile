@@ -22,11 +22,13 @@ export const ThemeProvider = ({children}) => {
         headerBottom: '#026154',
         middlePart: '#edfffd',
         itermColor: '#faa5a5',
+        textColor: '#d900ff',
     }
     const darkTheme = {
         headerBottom: '#716b5f',
         middlePart: '#ecddc6',
         itermColor: 'rgb(184,184,1)',
+        textColor: '#00c4ff',
     }
     const [isLightTheme, setIsLightTheme] = useState(true);
     const toggleTheme = () => {

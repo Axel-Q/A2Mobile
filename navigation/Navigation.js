@@ -52,6 +52,7 @@ const BottomTabNavigator = () => {
         tabBarStyle: {
             backgroundColor: theme.headerBottom,
         },
+         headerTintColor: theme.textColor,
     })}
     >
         <Tab.Screen name="Activities" component={InfoDisplayScreen}/>
@@ -92,6 +93,7 @@ export const Navigation = () => {
                             headerStyle: {
                                 backgroundColor: theme.headerBottom,
                             },
+                            headerTintColor: theme.textColor,
                         };
                     }}/>
             </Stack.Navigator>
