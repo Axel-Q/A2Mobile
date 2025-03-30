@@ -1,78 +1,64 @@
-# Activity and Diet Tracker App
+# 🏃‍♂️ Activity and Diet Tracker App
 
-## Overview
-A React Native app for tracking activities and diet entries on iOS and Android. Users can:
-- Log activities (e.g., running, cycling) with duration and date.
-- Record diet entries with food details and calories.
-- Mark "special" entries based on conditions.
-- Switch between light and dark themes.
-- Store data locally (Part 1) and sync with Firebase Firestore (Part 2).
+Welcome to the Activity and Diet Tracker App! This React Native app helps users track activities and diet entries on both iOS and Android.
 
-## Features
-### Part 1:
-- Bottom tab navigation: Activities, Diet, Settings.
-- Add/Edit activities and diet entries.
-- Theme toggling with React Context.
-- Local data storage using React Context.
+## 📌 Features
+- Track activities (e.g., running, swimming) with duration and date.
+- Log diet entries with food description, calories, and date.
+- Mark special entries (e.g., running > 60 min, calories > 800).
+- Toggle light/dark themes.
+- Store and sync data with Firebase Firestore (Part 2).
 
-### Part 2:
-- Firebase Firestore for real-time data storage.
-- Edit and delete functionality.
-- Pressable components for UI interactions.
-- Firestore listeners for live updates.
+## 🔄 Workflow
+1. **Initialize Repository**: Clone and set up the project.
+2. **Branching**: Create new branches for each part.
+3. **Commit & Push**: Make frequent commits and push changes.
+4. **Pull Request**: Assign your TA as a reviewer before merging.
+5. **Continue to Part 2**: Merge and transition from React Context to Firestore.
 
-## Screens
-- **Activities Screen:** List of activities.
-- **Diet Screen:** List of diet entries.
-- **Add Activity/Diet Screen:** Form with validation.
-- **Settings Screen:** Theme toggle.
-- **Edit Screen (Part 2):** Modify or delete existing entries.
+## 📱 Screens
+### 🏅 Activities Screen
+- Displays logged activities in a scrollable list.
+### 🍽️ Diet Screen
+- Lists diet entries with calories and food descriptions.
+### ➕ Add Activity Screen
+- Add an activity with name, duration, and date.
+- Validates inputs before saving.
+### 🥗 Add Diet Entry Screen
+- Add food details with calorie count and date.
+- Marks special entries automatically.
+### ⚙️ Settings Screen
+- Toggle dark/light mode using React Context.
+### ✏️ Edit Screen (Part 2)
+- Edit or delete existing entries.
+- Updates Firestore in real time.
 
-## Data Handling
-- **Part 1:** Uses React Context for local state management.
-- **Part 2:** Firestore integration with real-time updates.
+## 🔧 Data Handling
+- **Part 1**: Uses React Context for local state management.
+- **Part 2**: Switches to Firebase Firestore for real-time updates.
 
-## Setup Instructions
-1. Clone the repository:
-   ```bash
-   git clone <repository_url>
-   cd activity-diet-tracker
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Start the Expo project:
-   ```bash
-   npm start
-   ```
-4. Run on device:
-   - Android: Press `a`
-   - iOS: Press `i`
+## 🚀 Firebase Firestore Integration (Part 2)
+1. **Setup** Firebase using environment variables.
+2. **Listen** for real-time updates.
+3. **Replace Buttons** with Pressable components.
 
-## Development Workflow
-- Create a new branch for each feature:
-  ```bash
-  git checkout -b feature-branch
-  ```
-- Commit and push changes:
-  ```bash
-  git add .
-  git commit -m "Your message"
-  git push origin feature-branch
-  ```
-- Open a pull request and assign the TA as a reviewer.
-- Merge to `main` only after approval.
+## 🎨 Styling & Theming
+- Modular styles stored in a `styles.js` file.
+- React Context manages theme switching.
+- Pressable components provide visual feedback.
 
-## Submission Guidelines
-- Ensure the app runs on both iOS and Android.
-- Submit the GitHub repo link via the course system.
+## ✅ Submission Guidelines
+1. **Branching**: Work in separate branches.
+2. **Commit Often**: Use meaningful commit messages.
+3. **Pull Requests**: Assign a TA for review.
+4. **Cross-Platform Testing**: Ensure the app runs on iOS & Android.
+5. **Submit GitHub Repo**: Share the link via the course system.
 
-## Notes
-- Use environment variables for Firebase config.
-- Keep components reusable and modular.
-- Maintain consistent styling.
-- Address TA feedback before proceeding to Part 2.
+## 📝 Notes
+- Use **environment variables** for Firebase config.
+- Keep components **reusable and modular**.
+- Maintain **consistent styles and layout**.
+- Address feedback from Part 1 before starting Part 2.
 
-For questions, open an issue or contact the course staff.
+💡 Need help? Open an issue or contact the course staff!
 
