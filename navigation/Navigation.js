@@ -52,9 +52,10 @@ const BottomTabNavigator = () => {
         tabBarStyle: {
             backgroundColor: theme.headerBottom,
         },
+         headerTintColor: theme.textColor,
     })}
     >
-        <Tab.Screen name="Activities" component={InfoDisplayScreen} />
+        <Tab.Screen name="Activities" component={InfoDisplayScreen}/>
         <Tab.Screen name="Diet" component={InfoDisplayScreen}/>
         <Tab.Screen name="Settings" component={SettingsScreen}/>
     </Tab.Navigator>);
@@ -76,14 +77,25 @@ export const Navigation = () => {
                     headerShown: false,
                 }}/>
                 <Stack.Screen name="Entry" component={EntryScreen} options={
-                    ({route}) => ({
-                        title:
-                            route.params?.type === 'activity'
-                                ? 'Add an Activity'
-                                : 'Add A Diet Entry', headerStyle: {
-                            backgroundColor: theme.headerBottom, // Use the theme background color here
-                        },
-                    })}/>
+                    ({route}) => {
+                        const {type, item} = route.params || {};
+                        let title = '';
+                        if (item) {
+                            title = 'Edit'
+                        } else if (type === 'activity') {
+                            title = 'Add Activity';
+                        } else if (type === 'diet') {
+                            title = 'Add Diet';
+                        }
+                        return {
+                            title,
+                            headerTitleAlign: 'center',
+                            headerStyle: {
+                                backgroundColor: theme.headerBottom,
+                            },
+                            headerTintColor: theme.textColor,
+                        };
+                    }}/>
             </Stack.Navigator>
         </ItemContext.Provider>);
 }
