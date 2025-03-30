@@ -47,18 +47,4 @@ Welcome to the Activity and Diet Tracker App! This React Native app helps users 
 - React Context manages theme switching.
 - Pressable components provide visual feedback.
 
-## ✅ Submission Guidelines
-1. **Branching**: Work in separate branches.
-2. **Commit Often**: Use meaningful commit messages.
-3. **Pull Requests**: Assign a TA for review.
-4. **Cross-Platform Testing**: Ensure the app runs on iOS & Android.
-5. **Submit GitHub Repo**: Share the link via the course system.
-
-## 📝 Notes
-- Use **environment variables** for Firebase config.
-- Keep components **reusable and modular**.
-- Maintain **consistent styles and layout**.
-- Address feedback from Part 1 before starting Part 2.
-
-💡 Need help? Open an issue or contact the course staff!
 
